@@ -1,6 +1,6 @@
 language: python
 python:
-  - {{{ python.version }}}
+  - 2.7
 
 install:
   - make python=$( which python ) .installed.cfg
@@ -10,4 +10,4 @@ script:
 
 notifications:
   irc:
-    - "{{{ author.irc }}}"
+    - "irc.freenode.org#niteoweb"
