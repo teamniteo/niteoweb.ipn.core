@@ -4,8 +4,6 @@
 from niteoweb.ipn.testing import IntegrationTestCase
 from Products.CMFCore.utils import getToolByName
 
-import unittest2 as unittest
-
 
 class TestInstall(IntegrationTestCase):
     """Test installation of niteoweb.ipn into Plone."""
@@ -23,9 +21,3 @@ class TestInstall(IntegrationTestCase):
         """Test if niteoweb.ipn is cleanly uninstalled."""
         self.installer.uninstallProducts(['niteoweb.ipn'])
         self.failIf(self.installer.isProductInstalled('niteoweb.ipn'))
-
-
-def test_suite():
-    """This sets up a test suite that actually runs the tests in the class
-    above."""
-    return unittest.defaultTestLoader.loadTestsFromName(__name__)
