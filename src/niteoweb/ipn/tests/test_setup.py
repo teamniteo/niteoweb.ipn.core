@@ -24,13 +24,6 @@ class TestInstall(IntegrationTestCase):
         self.installer.uninstallProducts(['niteoweb.ipn'])
         self.failIf(self.installer.isProductInstalled('niteoweb.ipn'))
 
-    # browserlayer.xml
-    def test_browserlayer(self):
-        """Test that INiteowebIpnLayer is registered."""
-        from niteoweb.ipn.interfaces import INiteowebIpnLayer
-        from plone.browserlayer import utils
-        self.failUnless(INiteowebIpnLayer in utils.registered_layers())
-
 
 def test_suite():
     """This sets up a test suite that actually runs the tests in the class
