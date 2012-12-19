@@ -28,7 +28,7 @@ setup(
     keywords='Plone IPN',
     author='NiteoWeb Ltd.',
     author_email='info@niteoweb.com',
-    url='defaultdict(<function <lambda> at 0x106cf0de8>, {})',
+    url='http://pypi.python.org/pypi/niteoweb.ipn.jvzoo',
     license='BSD',
     packages=find_packages('src', exclude=['ez_setup']),
     namespace_packages=['niteoweb'],
