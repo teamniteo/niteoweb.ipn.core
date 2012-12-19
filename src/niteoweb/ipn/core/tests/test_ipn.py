@@ -1,7 +1,7 @@
 """Tests for Dummy Spinner."""
 
-from niteoweb.ipn.testing import IntegrationTestCase
-from niteoweb.ipn.interfaces import IIPN
+from niteoweb.ipn.core.testing import IntegrationTestCase
+from niteoweb.ipn.core.interfaces import IIPN
 from zope.component import queryAdapter
 
 

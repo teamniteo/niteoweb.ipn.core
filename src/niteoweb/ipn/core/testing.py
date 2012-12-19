@@ -15,7 +15,7 @@ from plone.testing import z2
 import unittest2 as unittest
 
 
-class NiteowebIpnLayer(PloneSandboxLayer):
+class NiteowebIpnCoreLayer(PloneSandboxLayer):
 
     defaultBases = (PLONE_FIXTURE,)
 
@@ -23,13 +23,13 @@ class NiteowebIpnLayer(PloneSandboxLayer):
         """Set up Zope."""
         # Load ZCML
         import niteoweb.ipn
-        self.loadZCML(package=niteoweb.ipn)
-        z2.installProduct(app, 'niteoweb.ipn')
+        self.loadZCML(package=niteoweb.ipn.core)
+        z2.installProduct(app, 'niteoweb.ipn.core')
 
     def setUpPloneSite(self, portal):
         """Set up Plone."""
         # Install into Plone site using portal_setup
-        applyProfile(portal, 'niteoweb.ipn:default')
+        applyProfile(portal, 'niteoweb.ipn.core:default')
 
         # Login and create some test content
         setRoles(portal, TEST_USER_ID, ['Manager'])
@@ -46,11 +46,11 @@ class NiteowebIpnLayer(PloneSandboxLayer):
         z2.uninstallProduct(app, 'niteoweb.ipn')
 
 
-FIXTURE = NiteowebIpnLayer()
+FIXTURE = NiteowebIpnCoreLayer()
 INTEGRATION_TESTING = IntegrationTesting(
-    bases=(FIXTURE,), name="NiteowebIpnLayer:Integration")
+    bases=(FIXTURE,), name="NiteowebIpnCoreLayer:Integration")
 FUNCTIONAL_TESTING = FunctionalTesting(
-    bases=(FIXTURE,), name="NiteowebIpnLayer:Functional")
+    bases=(FIXTURE,), name="NiteowebIpnCoreLayer:Functional")
 
 
 class IntegrationTestCase(unittest.TestCase):

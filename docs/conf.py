@@ -161,7 +161,7 @@ htmlhelp_basename = 'ipndoc'
 latex_documents = [
   ('index',
    'ipn.tex',
-  u'niteoweb.ipn Documentation',
+  u'niteoweb.ipn.core Documentation',
   u'', 'manual'
   ),
 ]

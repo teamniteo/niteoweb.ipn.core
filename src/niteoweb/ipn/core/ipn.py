@@ -2,7 +2,7 @@
 """Module providing IPN actions."""
 
 from five import grok
-from niteoweb.ipn.interfaces import IIPN
+from niteoweb.ipn.core.interfaces import IIPN
 from Products.CMFCore.interfaces import ISiteRoot
 
 

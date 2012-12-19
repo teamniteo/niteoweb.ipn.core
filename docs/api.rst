@@ -6,23 +6,23 @@ API
 Miscellaneous
 =============
 
-.. automodule:: niteoweb.ipn
+.. automodule:: niteoweb.ipn.core
     :members:
 
 ----
 
-.. automodule:: niteoweb.ipn.interfaces
+.. automodule:: niteoweb.ipn.core.interfaces
     :members:
 
 
 Tests
 =====
 
-.. automodule:: niteoweb.ipn.testing
+.. automodule:: niteoweb.ipn.core.testing
     :members:
 
 ----
 
-.. automodule:: niteoweb.ipn.tests.test_setup
+.. automodule:: niteoweb.ipn.core.tests.test_setup
     :members:
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Installer for the niteoweb.ipn package."""
+"""Installer for the niteoweb.ipn.core package."""
 
 from setuptools import find_packages
 from setuptools import setup
@@ -16,8 +16,8 @@ long_description = \
     read('docs', 'LICENSE.rst')
 
 setup(
-    name='niteoweb.ipn',
-    version='0.1a1',
+    name='niteoweb.ipn.core',
+    version='0.1',
     description="Support for Instant Payment Notifications in Plone.",
     long_description=long_description,
     # Get more from http://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -28,7 +28,7 @@ setup(
     keywords='Plone IPN',
     author='NiteoWeb Ltd.',
     author_email='info@niteoweb.com',
-    url='http://pypi.python.org/pypi/niteoweb.ipn.jvzoo',
+    url='http://pypi.python.org/pypi/niteoweb.ipn.core',
     license='BSD',
     packages=find_packages('src', exclude=['ez_setup']),
     namespace_packages=['niteoweb'],
