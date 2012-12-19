@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Init and utils."""
-
+import pdb; pdb.set_trace( )
 from zope.i18nmessageid import MessageFactory
 
 _ = MessageFactory('niteoweb.ipn')
