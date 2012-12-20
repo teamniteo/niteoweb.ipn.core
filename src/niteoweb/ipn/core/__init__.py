@@ -3,7 +3,7 @@
 
 from zope.i18nmessageid import MessageFactory
 
-_ = MessageFactory('niteoweb.ipn')
+_ = MessageFactory('niteoweb.ipn.core')
 
 
 def initialize(context):

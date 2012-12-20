@@ -22,7 +22,7 @@ class NiteowebIpnCoreLayer(PloneSandboxLayer):
     def setUpZope(self, app, configurationContext):
         """Set up Zope."""
         # Load ZCML
-        import niteoweb.ipn
+        import niteoweb.ipn.core
         self.loadZCML(package=niteoweb.ipn.core)
         z2.installProduct(app, 'niteoweb.ipn.core')
 
@@ -43,7 +43,7 @@ class NiteowebIpnCoreLayer(PloneSandboxLayer):
 
     def tearDownZope(self, app):
         """Tear down Zope."""
-        z2.uninstallProduct(app, 'niteoweb.ipn')
+        z2.uninstallProduct(app, 'niteoweb.ipn.core')
 
 
 FIXTURE = NiteowebIpnCoreLayer()

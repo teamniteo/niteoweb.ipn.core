@@ -31,7 +31,7 @@ setup(
     url='http://pypi.python.org/pypi/niteoweb.ipn.core',
     license='BSD',
     packages=find_packages('src', exclude=['ez_setup']),
-    namespace_packages=['niteoweb'],
+    namespace_packages=['niteoweb', 'niteoweb.ipn'],
     package_dir={'': 'src'},
     include_package_data=True,
     zip_safe=False,
@@ -39,6 +39,7 @@ setup(
         'five.grok',
         'Plone',
         'plone.api',
+        'plone.app.registry',
         'setuptools',
     ],
     extras_require={
