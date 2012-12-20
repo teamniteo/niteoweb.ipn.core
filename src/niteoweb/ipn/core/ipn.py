@@ -19,12 +19,12 @@ class IPN(grok.MultiAdapter):
         """
         self.context = context
 
-    def enable_member(self):
+    def enable_member(self, data):
         """TODO
         """
         print 'enabling member'
 
-    def disable_member(self):
+    def disable_member(self, data):
         """TODO
         """
         print 'disabling member'
