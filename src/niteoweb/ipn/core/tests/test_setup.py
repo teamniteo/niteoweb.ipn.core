@@ -23,10 +23,3 @@ class TestInstall(IntegrationTestCase):
         self.installer.uninstallProducts(['niteoweb.ipn.core'])
         self.assertFalse(
             self.installer.isProductInstalled('niteoweb.ipn.core'))
-
-    # metadata.xml
-    def test_dependencies_installed(self):
-        """Test that all dependencies are installed."""
-        import pdb; pdb.set_trace( )
-        self.assertTrue(
-            self.installer.isProductInstalled('plone.app.registry'))
