@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Base module for unittesting."""
 
+from plone import api
 from plone.app.testing import applyProfile
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
@@ -32,9 +33,11 @@ class NiteowebIpnCoreLayer(PloneSandboxLayer):
         applyProfile(portal, 'niteoweb.ipn.core:default')
 
         # Login and create some test content
-        setRoles(portal, TEST_USER_ID, ['Manager'])
+        setRoles(portal, TEST_USER_ID, ['Member'])
         login(portal, TEST_USER_NAME)
-        portal.invokeFactory('Folder', 'folder')
+
+        # Create Disabled group
+        api.group.create(groupname='Disabled')
 
         # Commit so that the test browser sees these objects
         portal.portal_catalog.clearFindAndRebuild()
@@ -57,6 +60,13 @@ class IntegrationTestCase(unittest.TestCase):
     """Base class for integration tests."""
 
     layer = INTEGRATION_TESTING
+
+    def _assert_log_record(self, level, msg):
+        """Utility method for testing log output."""
+        self.assertEqual(self.log.records[0].name, 'niteoweb.ipn.core')
+        self.assertEqual(self.log.records[0].levelname, level)
+        self.assertEqual(self.log.records[0].getMessage(), msg,)
+        self.log.records.pop(0)
 
 
 class FunctionalTestCase(unittest.TestCase):
