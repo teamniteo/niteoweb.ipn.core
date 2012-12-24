@@ -2,9 +2,11 @@
 """Tests for enable_member action."""
 
 from DateTime import DateTime
-from plone import api
 from niteoweb.ipn.core.interfaces import IIPN
+from niteoweb.ipn.core.interfaces import IMemberEnabledEvent
 from niteoweb.ipn.core.testing import IntegrationTestCase
+from plone import api
+from zope.component import eventtesting
 from zope.component import queryAdapter
 from zope.testing.loggingsupport import InstalledHandler
 
@@ -19,6 +21,7 @@ class TestEnableMember(IntegrationTestCase):
         self.portal = self.layer['portal']
         self.ipn = queryAdapter(self.portal, IIPN)
         self.log = InstalledHandler('niteoweb.ipn.core')
+        eventtesting.setUp()
 
         # create a test product group and set it's validity
         api.group.create(groupname='1')
@@ -28,7 +31,7 @@ class TestEnableMember(IntegrationTestCase):
     def tearDown(self):
         """Clean up after yourself."""
         self.log.clear()
-        self.log.uninstall()
+        eventtesting.clearEvents()
 
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
     def test_create_member(self, DT):
@@ -57,6 +60,11 @@ class TestEnableMember(IntegrationTestCase):
             api.user.get(username='new@email.com').getProperty('valid_to'),
             DateTime('2012/01/11')
         )
+
+        # test event emitted
+        events = list(set(eventtesting.getEvents(IMemberEnabledEvent)))
+        self.assertEquals(len(events), 1)
+        self.assertEquals(events[0].username, 'new@email.com')
 
         # test member history
         self.assert_member_history(

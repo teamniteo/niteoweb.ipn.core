@@ -47,8 +47,7 @@ class MemberEnabledEvent(object):
     """Emmited when a member is enabled."""
     implements(IMemberEnabledEvent)
 
-    def __init__(self, context, username):
-        self.context = context
+    def __init__(self, username):
         self.username = username
 
 
@@ -61,6 +60,5 @@ class MemberDisabledEvent(object):
     """Emmited when a member is disabled."""
     implements(IMemberDisabledEvent)
 
-    def __init__(self, context, username):
-        self.context = context
+    def __init__(self, username):
         self.username = username

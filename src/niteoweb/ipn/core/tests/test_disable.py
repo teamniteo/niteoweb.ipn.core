@@ -3,8 +3,10 @@
 
 from DateTime import DateTime
 from niteoweb.ipn.core.interfaces import IIPN
+from niteoweb.ipn.core.interfaces import IMemberDisabledEvent
 from niteoweb.ipn.core.testing import IntegrationTestCase
 from plone import api
+from zope.component import eventtesting
 from zope.component import queryAdapter
 from zope.testing.loggingsupport import InstalledHandler
 
@@ -19,6 +21,7 @@ class TestDisableMember(IntegrationTestCase):
         self.portal = self.layer['portal']
         self.ipn = queryAdapter(self.portal, IIPN)
         self.log = InstalledHandler('niteoweb.ipn.core')
+        eventtesting.setUp()
 
         # create a test member and a test product group
         api.user.create(email='enabled@email.com')
@@ -28,7 +31,7 @@ class TestDisableMember(IntegrationTestCase):
     def tearDown(self):
         """Clean up after yourself."""
         self.log.clear()
-        self.log.uninstall()
+        eventtesting.clearEvents()
 
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
     def test_disable_member(self, DT):
@@ -52,6 +55,11 @@ class TestDisableMember(IntegrationTestCase):
             'Member',
             api.user.get_roles(username='enabled@email.com'),
         )
+
+        # test event emitted
+        events = list(set(eventtesting.getEvents(IMemberDisabledEvent)))
+        self.assertEquals(len(events), 1)
+        self.assertEquals(events[0].username, 'enabled@email.com')
 
         # test member history
         self.assert_member_history(

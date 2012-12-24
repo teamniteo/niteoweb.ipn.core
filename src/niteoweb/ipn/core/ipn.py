@@ -138,9 +138,7 @@ class IPN(grok.MultiAdapter):
         )
 
         # Notify third-party code that a member was enabled
-        notify(MemberEnabledEvent(self, member.id))
-
-        # TODO: send email with credentials + subscribe to aweber
+        notify(MemberEnabledEvent(member.id))
 
         # Done!
         logger.info("Enabled member '%s'." % email)
@@ -201,7 +199,7 @@ class IPN(grok.MultiAdapter):
         )
 
         # Notify third-party code that a member was enabled
-        notify(MemberDisabledEvent(self, member.id))
+        notify(MemberDisabledEvent(member.id))
 
         # Done!
         logger.info("Disabled member '%s'." % member.id)
