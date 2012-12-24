@@ -3,15 +3,20 @@
 
 from DateTime import DateTime
 from five import grok
+from niteoweb.ipn.core import DISABLED
 from niteoweb.ipn.core.interfaces import IIPN
+from niteoweb.ipn.core.interfaces import MemberDisabledEvent
+from niteoweb.ipn.core.interfaces import MemberEnabledEvent
+from niteoweb.ipn.core.interfaces import MissingParamError
+from niteoweb.ipn.core.interfaces import InvalidParamValueError
+from niteoweb.ipn.core.interfaces import ProductGroupNotFoundError
 from plone import api
 from Products.CMFCore.interfaces import ISiteRoot
+from zope.event import notify
 
 import logging
 
 logger = logging.getLogger("niteoweb.ipn.core")
-
-DISABLED = 'Disabled'
 
 
 class IPN(grok.MultiAdapter):
@@ -27,82 +32,181 @@ class IPN(grok.MultiAdapter):
         """
         self.context = context
 
-    def enable_member(self, data):
-        """Enable an existing or create a new member."""
-        self.data = data
-        username = self.data['email']
+    def enable_member(
+        self,
+        email=None,
+        product_id=None,
+        trans_type=None,
+        fullname=None,
+        affiliate=None,
+    ):
+        """Enable an existing or create a new member.
 
-        # Create a member object if this is a new user
-        if not api.user.get(username=username):
-            logger.info("Creating a new member: %s." % username)
-            self._create_new_member(data)
+        :param email: Email of the member, also used as username.
+        :type email: string
+        :param product_id: ID of product that Member has purchased.
+        :type product_id: string
+        :param trans_type: Type of transaction that occurred.
+        :type trans_type: string
+        :param fullname: Member's fullname, required only when creating a new
+            member.
+        :type fullname: string
+        :param affiliate: Member's affiliate, needed only when creating a new
+            member.
+        :type affiliate: string
+
+        :returns: None
+
+        """
+        if not email:
+            raise MissingParamError("Parameter 'email' is missing.")
+
+        if not product_id:
+            raise MissingParamError("Parameter 'product_id' is missing.")
+
+        if not trans_type:
+            raise MissingParamError("Parameter 'trans_type' is missing.")
+
+        # Product group must exist
+        product_group = api.group.get(groupname=product_id)
+        if not product_group:
+            raise ProductGroupNotFoundError(
+                "Could not found group with id '%s'." % product_id)
+
+        # Create a member object if this is a new member
+        if not api.user.get(username=email):
+
+            if not fullname:
+                raise MissingParamError(
+                    "Parameter 'fullname' is needed to create a new member.")
+
+            if not affiliate:
+                raise MissingParamError(
+                    "Parameter 'affiliate' is needed to create a new member.")
+
+            logger.info("Creating a new member: %s" % email)
+            properties = dict(
+                fullname=fullname,
+                affiliate=affiliate,
+            )
+            api.user.create(
+                email=email,
+                properties=properties,
+            )
+        member = api.user.get(username=email)
 
         # If an existing member is in group Disabled, remove him from there
-        if username in api.user.get(groupname=DISABLED):
-            logger.info("Removing member '%s' from Disabled group." % username)
-            api.group.remove_user(groupname=DISABLED, username=username)
+        if DISABLED in api.group.get_groups(user=member):
+            logger.info(
+                "Removing member '%s' from Disabled group." % member.id)
+            api.group.remove_user(groupname=DISABLED, user=member)
 
         # Grant Member role if member does not have it yet
-        if not 'Member' in api.user.roles():
-            logger.info("Granting member '%s' the Member role." % username)
-            api.user.grant_roles(username=username, roles=['Member'])
+        if not 'Member' in api.user.get_roles(user=member):
+            logger.info("Granting member '%s' the Member role." % member.id)
+            api.user.grant_roles(user=member, roles=['Member'])
 
-        # Add member to product's group
-        product_group = self._get_product_settings()['product_group']
-        api.group.add_user(username=username, groupname=product_group)
+        # Add member to product group
+        if product_group not in api.group.get_groups(user=member):
+            api.group.add_user(user=member, group=product_group)
+            logger.info(
+                "Added member '%s' to product group '%s'."
+                % (member.id, product_group)
+            )
+
+        # Set member's validity based on his product group
+        product_validity = int(product_group.getProperty('validity'))
+        if product_validity < 1:
+            raise InvalidParamValueError(
+                "Validity for group '%s' is less than -1: %i"
+                % (product_group.id, product_validity))
+
+        valid_to = DateTime() + product_validity
+        member.setMemberProperties(mapping={'valid_to': valid_to})
         logger.info(
-            "Added member '%s' to product group '%s'."
-            % (username, product_group)
+            "Member's (%s) valid_to date set to %s."
+            % (member.id, valid_to.strftime('%Y/%m/%d')))
+
+        # Add entry to member history
+        self._add_to_member_history(
+            member,
+            '{timestamp};{product_id};{ttype};{action}'.format(
+                timestamp=DateTime(),
+                product_id=product_id,
+                ttype=trans_type,
+                action='enable_member',
+            )
         )
 
-        # Set member's validity based on his product_id
-        product_validity = self._get_product_settings()['product_validity']
-        valid_to = DateTime().now() + product_validity
-        self.member = api.user.get(username=username)
-        self.member.setMemberProperties(mapping={
-            'valid_to': DateTime() + product_validity
-        })
-        logger.info("Member's (%s) valid_to set to %s." % (username, valid_to))
+        # Notify third-party code that a member was enabled
+        notify(MemberEnabledEvent(self, member.id))
 
-        # Write to member log
-        self._write_member_log('enable_member')
+        # TODO: send email with credentials + subscribe to aweber
 
         # Done!
-        logger.info("Enabled member '%s'." % username)
+        logger.info("Enabled member '%s'." % email)
 
-    def disable_member(self, data):
-        """Disable an existing member."""
-        self.data = data
-        username = self.data['email']
+    def disable_member(
+        self,
+        email=None,
+        product_id=None,
+        trans_type=None,
+        **kwargs
+    ):
+        """Disable an existing member.
 
-        self.member = api.user.get(username=username)
-        if not self.member:
-            raise Exception
+        :param email: Email of the member, also used as username.
+        :type email: string
+        :param product_id: ID of product that Member has purchased.
+        :type product_id: string
+        :param trans_type: Type of transaction that occurred.
+        :type trans_type: string
+
+        :returns: None
+
+        """
+        member = api.user.get(username=email)
+        if not member:
+            logger.warning(
+                "Cannot disable a nonexistent member: '%s'." % email)
+            return
 
         # Move to Disabled group if not already there
-        if not username in api.user.get_users(groupname=DISABLED):
-            logger.info("Adding member '%s' to Disabled group." % username)
-            api.group.add_user(groupname=DISABLED, username=username)
+        if not member in api.user.get_users(groupname=DISABLED):
+            logger.info("Adding member '%s' to Disabled group." % member.id)
+            api.group.add_user(groupname=DISABLED, user=member)
 
         # Revoke 'Member' role which "disables" the user
-        # TODO: get_roles dobi role od current memberja, sweet!
-        if 'Member' in api.user.get_roles():
-            logger.info("Revoking member '%s' the Member role." % username)
-            api.user.revoke_roles(username=username, roles=['Member'])
+        if 'Member' in api.user.get_roles(user=member):
+            logger.info("Revoking member '%s' the Member role." % member.id)
+            api.user.revoke_roles(user=member, roles=['Member'])
 
-        # Write to member log
-        self._write_member_log('disable_member')
+        # Add entry to member history
+        self._add_to_member_history(
+            member,
+            '{timestamp}|{product_id}|{ttype}|{action}'.format(
+                timestamp=DateTime(),
+                product_id=product_id,
+                ttype=trans_type,
+                action='disable_member',
+            )
+        )
+
+        # Notify third-party code that a member was enabled
+        notify(MemberDisabledEvent(self, member.id))
 
         # Done!
-        logger.info("Disabled member '%s'." % username)
+        logger.info("Disabled member '%s'." % member.id)
 
-    def _write_member_log(self, action):
-        """Add a record to member's log."""
-        log = list(self.member.getProperty('log'))
-        log.append('{timestamp};{product_id};{ttype};{action}'.format(
-            timestamp=DateTime(),
-            product_id=self.data['product_id'],
-            ttype=self.data['transaction_type'],
-            action=action,
-        ))
-        self.member.setMemberProperties(mapping={'log': log})
+    def _add_to_member_history(self, member, msg):
+        """Add a record to member's history.
+
+        :param msg: Message to add to member's history
+        :type msg: string
+
+        :returns: None
+
+        """
+        history = list(member.getProperty('history'))
+        history.append(msg)
+        member.setMemberProperties(mapping={'history': history})

@@ -3,5 +3,5 @@
     <property name="product_id" type="string"></property>
     <property name="affiliate" type="string"></property>
     <property name="valid_to" type="date">2012/10/10</property>
-    <property name="log" type="lines"></property>
+    <property name="history" type="lines"></property>
 </object>

@@ -11,15 +11,23 @@ class TestInstall(IntegrationTestCase):
     def setUp(self):
         """Custom shared utility setup for tests."""
         self.portal = self.layer['portal']
-        self.installer = api.portal.get_tool('portal_quickinstaller')
 
     def test_product_installed(self):
         """Test if niteoweb.ipn.core is installed in portal_quickinstaller."""
-        self.assertTrue(
-            self.installer.isProductInstalled('niteoweb.ipn.core'))
+        installer = api.portal.get_tool('portal_quickinstaller')
+        self.assertTrue(installer.isProductInstalled('niteoweb.ipn.core'))
 
     def test_uninstall(self):
         """Test if niteoweb.ipn.core is cleanly uninstalled."""
-        self.installer.uninstallProducts(['niteoweb.ipn.core'])
-        self.assertFalse(
-            self.installer.isProductInstalled('niteoweb.ipn.core'))
+        installer = api.portal.get_tool('portal_quickinstaller')
+        installer.uninstallProducts(['niteoweb.ipn.core'])
+        self.assertFalse(installer.isProductInstalled('niteoweb.ipn.core'))
+
+    def test_disabled_group_created(self):
+        """Test that Disabled group was created."""
+        self.assertTrue(api.group.get(groupname='Disabled'))
+
+    def test_validity_group_property_added(self):
+        """Test that groups have a new 'validity' property."""
+        groupdata = api.portal.get_tool('portal_groupdata')
+        self.assertTrue(groupdata.hasProperty('validity'))

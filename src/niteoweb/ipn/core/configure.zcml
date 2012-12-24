@@ -23,4 +23,12 @@
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
 
+    <!-- Register the custom import step -->
+    <genericsetup:importStep
+        name="niteoweb.ipn.core"
+        title="niteoweb.ipn.core custom install step"
+        description=""
+        handler="niteoweb.ipn.core.setuphandlers.setupVarious"
+        />
+
 </configure>

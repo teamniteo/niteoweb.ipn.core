@@ -61,11 +61,11 @@ class IntegrationTestCase(unittest.TestCase):
 
     layer = INTEGRATION_TESTING
 
-    def _assert_log_record(self, level, msg):
+    def assert_log_record(self, level, msg, name='niteoweb.ipn.core'):
         """Utility method for testing log output."""
-        self.assertEqual(self.log.records[0].name, 'niteoweb.ipn.core')
+        self.assertEqual(self.log.records[0].name, name)
         self.assertEqual(self.log.records[0].levelname, level)
-        self.assertEqual(self.log.records[0].getMessage(), msg,)
+        self.assertEqual(self.log.records[0].getMessage(), msg)
         self.log.records.pop(0)
 
 
