@@ -25,10 +25,9 @@ class IPN(grok.MultiAdapter):
     grok.implements(IIPN)
 
     def __init__(self, context):
-        """TODO.
+        """Initialize the IPN portal adapter.
 
         :param context: Portal object.
-        :type context: TODO
         """
         self.context = context
 

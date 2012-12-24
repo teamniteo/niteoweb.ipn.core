@@ -10,10 +10,10 @@ class IIPN(Interface):
     """Definition of the IPN adapter."""
 
     def enable_member():
-        """TODO"""
+        """Enable an existing or create a new member."""
 
     def disable_member():
-        """TODO"""
+        """Disable an existing member."""
 
 
 # Exceptions
