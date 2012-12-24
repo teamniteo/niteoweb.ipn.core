@@ -68,6 +68,14 @@ class IntegrationTestCase(unittest.TestCase):
         self.assertEqual(self.log.records[0].getMessage(), msg)
         self.log.records.pop(0)
 
+    def assert_member_history(self, username, history):
+        """Utility method for testing member history."""
+        member = api.user.get(username=username)
+        self.assertEqual(
+            list(member.getProperty('history')),
+            history,
+        )
+
 
 class FunctionalTestCase(unittest.TestCase):
     """Base class for functional tests."""

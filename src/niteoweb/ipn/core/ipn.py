@@ -130,8 +130,8 @@ class IPN(grok.MultiAdapter):
         # Add entry to member history
         self._add_to_member_history(
             member,
-            '{timestamp};{product_id};{ttype};{action}'.format(
-                timestamp=DateTime(),
+            '{timestamp}|{product_id}|{ttype}|{action}'.format(
+                timestamp=DateTime().strftime('%Y/%m/%d %H:%M:%S'),
                 product_id=product_id,
                 ttype=trans_type,
                 action='enable_member',
@@ -165,6 +165,15 @@ class IPN(grok.MultiAdapter):
         :returns: None
 
         """
+        if not email:
+            raise MissingParamError("Parameter 'email' is missing.")
+
+        if not product_id:
+            raise MissingParamError("Parameter 'product_id' is missing.")
+
+        if not trans_type:
+            raise MissingParamError("Parameter 'trans_type' is missing.")
+
         member = api.user.get(username=email)
         if not member:
             logger.warning(
@@ -185,7 +194,7 @@ class IPN(grok.MultiAdapter):
         self._add_to_member_history(
             member,
             '{timestamp}|{product_id}|{ttype}|{action}'.format(
-                timestamp=DateTime(),
+                timestamp=DateTime().strftime('%Y/%m/%d %H:%M:%S'),
                 product_id=product_id,
                 ttype=trans_type,
                 action='disable_member',

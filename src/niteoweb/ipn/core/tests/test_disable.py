@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 """Tests for disable_member action."""
 
+from DateTime import DateTime
 from niteoweb.ipn.core.interfaces import IIPN
 from niteoweb.ipn.core.testing import IntegrationTestCase
 from plone import api
 from zope.component import queryAdapter
 from zope.testing.loggingsupport import InstalledHandler
+
+import mock
 
 
 class TestDisableMember(IntegrationTestCase):
@@ -27,12 +30,15 @@ class TestDisableMember(IntegrationTestCase):
         self.log.clear()
         self.log.uninstall()
 
-    def test_disable_member(self):
+    @mock.patch('niteoweb.ipn.core.ipn.DateTime')
+    def test_disable_member(self, DT):
         """Test default execution of the disable_member() action."""
+        DT.return_value = DateTime('2012/01/01')
+
         self.ipn.disable_member(
             email='enabled@email.com',
             product_id='1',
-            transaction_type='CANCEL',
+            trans_type='CANCEL',
         )
 
         # test member is in Disabled group
@@ -47,7 +53,11 @@ class TestDisableMember(IntegrationTestCase):
             api.user.get_roles(username='enabled@email.com'),
         )
 
-        # TODO: test member history
+        # test member history
+        self.assert_member_history(
+            username='enabled@email.com',
+            history=['2012/01/01 00:00:00|1|CANCEL|disable_member']
+        )
 
         # test log output
         self.assertEqual(len(self.log.records), 3)
@@ -69,10 +79,8 @@ class TestDisableMember(IntegrationTestCase):
         self.ipn.disable_member(
             email='nonexistent@email.com',
             product_id='1',
-            transaction_type='CANCEL',
+            trans_type='CANCEL',
         )
-
-        # TODO: test member history
 
         # test log output
         self.assertEqual(len(self.log.records), 1)

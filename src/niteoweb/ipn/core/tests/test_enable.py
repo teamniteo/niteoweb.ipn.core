@@ -33,7 +33,6 @@ class TestEnableMember(IntegrationTestCase):
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
     def test_create_member(self, DT):
         """Test creating a new member with enable_member() action."""
-        # mock current date
         DT.return_value = DateTime('2012/01/01')
 
         self.ipn.enable_member(
@@ -48,10 +47,22 @@ class TestEnableMember(IntegrationTestCase):
         self.assertTrue(api.user.get(username='new@email.com'))
 
         # test member is in product group
+        self.assertIn(
+            'new@email.com',
+            [user.id for user in api.user.get_users(groupname='1')]
+        )
 
         # test member valid_to
+        self.assertEqual(
+            api.user.get(username='new@email.com').getProperty('valid_to'),
+            DateTime('2012/01/11')
+        )
 
-        # # TODO: test member history
+        # test member history
+        self.assert_member_history(
+            username='new@email.com',
+            history=['2012/01/01 00:00:00|1|SALE|enable_member']
+        )
 
         # test log output
         self.assertEqual(len(self.log.records), 4)
