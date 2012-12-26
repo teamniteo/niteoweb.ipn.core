@@ -56,6 +56,8 @@ class IPN(grok.MultiAdapter):
         :returns: None
 
         """
+        note = ''
+
         if not email:
             raise MissingParamError("Parameter 'email' is missing.")
 
@@ -128,11 +130,12 @@ class IPN(grok.MultiAdapter):
         # Add entry to member history
         self._add_to_member_history(
             member,
-            '{timestamp}|{product_id}|{ttype}|{action}'.format(
+            '{timestamp}|{action}|{product_id}|{ttype}|{note}'.format(
                 timestamp=DateTime().strftime('%Y/%m/%d %H:%M:%S'),
                 product_id=product_id,
                 ttype=trans_type,
                 action='enable_member',
+                note=note,
             )
         )
 
@@ -161,6 +164,8 @@ class IPN(grok.MultiAdapter):
         :returns: None
 
         """
+        note = ''
+
         if not email:
             raise MissingParamError("Parameter 'email' is missing.")
 
@@ -176,12 +181,19 @@ class IPN(grok.MultiAdapter):
                 "Cannot disable a nonexistent member: '%s'." % email)
             return
 
-        # TODO: remove from all groups and add a note to history which groups
-
         # Move to Disabled group if not already there
         if not member in api.user.get_users(groupname=DISABLED):
             logger.info("Adding member '%s' to Disabled group." % member.id)
             api.group.add_user(groupname=DISABLED, user=member)
+
+        # Remove member from all groups and add a note to history which groups
+        other_groups = [g for g in api.group.get_groups(user=member)
+                        if g.id not in [DISABLED, 'AuthenticatedUsers']]
+        if other_groups:
+            note = 'removed from groups: '
+            for group in other_groups:
+                api.group.remove_user(group=group, user=member)
+            note += '%s, ' % group.id
 
         # Revoke 'Member' role which "disables" the user
         if 'Member' in api.user.get_roles(user=member):
@@ -191,11 +203,12 @@ class IPN(grok.MultiAdapter):
         # Add entry to member history
         self._add_to_member_history(
             member,
-            '{timestamp}|{product_id}|{ttype}|{action}'.format(
+            '{timestamp}|{action}|{product_id}|{ttype}|{note}'.format(
                 timestamp=DateTime().strftime('%Y/%m/%d %H:%M:%S'),
                 product_id=product_id,
                 ttype=trans_type,
                 action='disable_member',
+                note=note,
             )
         )
 

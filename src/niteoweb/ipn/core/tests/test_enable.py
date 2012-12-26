@@ -173,7 +173,7 @@ class TestEnableMember(IntegrationTestCase):
         # test member history
         self.assert_member_history(
             username='new@test.com',
-            history=['2012/01/01 00:00:00|1|SALE|enable_member']
+            history=['2012/01/01 00:00:00|enable_member|1|SALE|']
         )
 
         # test log output
@@ -196,8 +196,9 @@ class TestEnableMember(IntegrationTestCase):
         )
 
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
-    def test_enable_existing_member(self, DT):
-        """Test enabling an existing member: extending its validity period."""
+    def test_enable_enabled_member(self, DT):
+        """Test enabling an already enabled member, meaning extending its
+        validity period."""
         DT.return_value = DateTime('2012/01/01')
 
         # first create a valid member
@@ -227,8 +228,8 @@ class TestEnableMember(IntegrationTestCase):
         self.assert_member_history(
             username='new@test.com',
             history=[
-                '2012/01/01 00:00:00|1|SALE|enable_member',
-                '2012/02/01 00:00:00|1|RECUR|enable_member',
+                '2012/01/01 00:00:00|enable_member|1|SALE|',
+                '2012/02/01 00:00:00|enable_member|1|RECUR|',
             ],
         )
 
@@ -288,7 +289,7 @@ class TestEnableMember(IntegrationTestCase):
         # test member history
         self.assert_member_history(
             username='disabled@test.com',
-            history=['2012/01/01 00:00:00|1|UNCANCEL|enable_member']
+            history=['2012/01/01 00:00:00|enable_member|1|UNCANCEL|']
         )
 
         # test log output
