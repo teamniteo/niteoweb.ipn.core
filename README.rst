@@ -49,6 +49,7 @@ The following information is stored in member data for later use:
 Assumptions
 ===========
 
+* Emails are used as usernames.
 * "Disabling" a member means to revoke her Member role and put her in the
   `Disabled` group, while removing her from all other groups.
 * "Enabling" a member means to create a new member (if she doesn't exist yet),

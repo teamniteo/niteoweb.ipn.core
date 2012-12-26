@@ -36,6 +36,43 @@ class TestInstall(IntegrationTestCase):
         """Test that Disabled group was created."""
         self.assertTrue(api.group.get(groupname='Disabled'))
 
+    # propertiestool.xml
+    def test_portal_tabs_auto_creation_disabled(self):
+        """Test if portal tabs auto-creation is disabled."""
+        self.assertTrue(
+            self.portal.portal_properties.
+            site_properties.use_email_as_login
+        )
+
+    # memberdata_properties.xml
+    def test_fields_added_to_member(self):
+        """Test that extra fields are added to member properties."""
+        memberdata = self.portal.portal_memberdata
+
+        self.assertTrue(hasattr(memberdata, 'product_id'))
+        self.assertEquals(
+            str(memberdata.getProperty('product_id').__class__),
+            "<type 'str'>"
+        )
+
+        self.assertTrue(hasattr(memberdata, 'affiliate'))
+        self.assertEquals(
+            str(memberdata.getProperty('affiliate').__class__),
+            "<type 'str'>"
+        )
+
+        self.assertTrue(hasattr(memberdata, 'valid_to'))
+        self.assertEquals(
+            str(memberdata.getProperty('valid_to').__class__),
+            'DateTime.DateTime.DateTime'
+        )
+
+        self.assertTrue(hasattr(memberdata, 'history'))
+        self.assertEquals(
+            str(memberdata.getProperty('history').__class__),
+            "<type 'tuple'>"
+        )
+
 
 class TestDoubleInstall(TestInstall):
     """Test that setuphandlers.py code is resilient against installing this

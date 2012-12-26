@@ -26,49 +26,153 @@ class TestEnableMember(IntegrationTestCase):
         # create a test product group and set it's validity
         api.group.create(groupname='1')
         group = api.group.get(groupname='1')
-        group.setGroupProperties(mapping={'validity': 10})
+        group.setGroupProperties(mapping={'validity': 31})
 
     def tearDown(self):
         """Clean up after yourself."""
         self.log.clear()
         eventtesting.clearEvents()
 
+    def test_required_parameters(self):
+        """Test that parameters are required."""
+        from niteoweb.ipn.core.interfaces import MissingParamError
+
+        with self.assertRaises(MissingParamError) as cm:
+            self.ipn.enable_member(
+                email=None,
+                product_id='1',
+                trans_type='SALE',
+            )
+        self.assertEquals(
+            cm.exception.message,
+            "Parameter 'email' is missing.",
+        )
+
+        with self.assertRaises(MissingParamError) as cm:
+            self.ipn.enable_member(
+                email='new@test.com',
+                product_id=None,
+                trans_type='SALE',
+            )
+        self.assertEquals(
+            cm.exception.message,
+            "Parameter 'product_id' is missing.",
+        )
+
+        with self.assertRaises(MissingParamError) as cm:
+            self.ipn.enable_member(
+                email='new@test.com',
+                product_id='1',
+                trans_type=None,
+            )
+        self.assertEquals(
+            cm.exception.message,
+            "Parameter 'trans_type' is missing.",
+        )
+
+    def test_product_group_parameter(self):
+        """Test that product_group parameter is checked for validity."""
+        from niteoweb.ipn.core.interfaces import InvalidParamValueError
+
+        with self.assertRaises(InvalidParamValueError) as cm:
+            self.ipn.enable_member(
+                email='new@test.com',
+                product_id='0',
+                trans_type='SALE',
+            )
+        self.assertEquals(
+            cm.exception.message,
+            "Could not find group with id '0'.",
+        )
+
+    def test_parameters_when_creating_a_new_member(self):
+        """Test that 'affiliate' and 'fullname' parameters are required when
+        member that is to be enabled does not exist yet."""
+        from niteoweb.ipn.core.interfaces import MissingParamError
+
+        with self.assertRaises(MissingParamError) as cm:
+            self.ipn.enable_member(
+                email='new@test.com',
+                product_id='1',
+                trans_type='SALE',
+                fullname=None,
+                affiliate='aff@test.com',
+            )
+        self.assertEquals(
+            cm.exception.message,
+            "Parameter 'fullname' is needed to create a new member.",
+        )
+
+        with self.assertRaises(MissingParamError) as cm:
+            self.ipn.enable_member(
+                email='new@test.com',
+                product_id='1',
+                trans_type='SALE',
+                fullname='New Member',
+                affiliate=None,
+            )
+        self.assertEquals(
+            cm.exception.message,
+            "Parameter 'affiliate' is needed to create a new member.",
+        )
+
+    def test_product_validity_parameter(self):
+        """Product validity, which is read from the product group, must be a
+        positive integer."""
+        from niteoweb.ipn.core.interfaces import InvalidParamValueError
+
+        group = api.group.get(groupname='1')
+        group.setGroupProperties(mapping={'validity': 0})
+
+        with self.assertRaises(InvalidParamValueError) as cm:
+            self.ipn.enable_member(
+                email='new@test.com',
+                product_id='1',
+                trans_type='SALE',
+                fullname='New Member',
+                affiliate='aff@test.com',
+            )
+        self.assertEquals(
+            cm.exception.message,
+            "Validity for group '1' is not a positive integer: 0",
+        )
+
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
-    def test_create_member(self, DT):
+    def test_enable_new_member(self, DT):
         """Test creating a new member with enable_member() action."""
         DT.return_value = DateTime('2012/01/01')
 
         self.ipn.enable_member(
-            email='new@email.com',
+            email='new@test.com',
             product_id='1',
             trans_type='SALE',
             fullname='New Member',
-            affiliate='aff@email.com'
+            affiliate='aff@test.com',
         )
 
         # test member exists
-        self.assertTrue(api.user.get(username='new@email.com'))
+        self.assertTrue(api.user.get(username='new@test.com'))
 
         # test member is in product group
         self.assertIn(
-            'new@email.com',
+            'new@test.com',
             [user.id for user in api.user.get_users(groupname='1')]
         )
 
         # test member valid_to
         self.assertEqual(
-            api.user.get(username='new@email.com').getProperty('valid_to'),
-            DateTime('2012/01/11')
+            api.user.get(username='new@test.com').getProperty('valid_to'),
+            DateTime('2012/02/01')
         )
 
         # test event emitted
         events = list(set(eventtesting.getEvents(IMemberEnabledEvent)))
         self.assertEquals(len(events), 1)
-        self.assertEquals(events[0].username, 'new@email.com')
+        self.assertEquals(events[0].username, 'new@test.com')
 
         # test member history
         self.assert_member_history(
-            username='new@email.com',
+            username='new@test.com',
             history=['2012/01/01 00:00:00|1|SALE|enable_member']
         )
 
@@ -76,17 +180,136 @@ class TestEnableMember(IntegrationTestCase):
         self.assertEqual(len(self.log.records), 4)
         self.assert_log_record(
             'INFO',
-            "Creating a new member: new@email.com",
+            "Creating a new member: new@test.com",
         )
         self.assert_log_record(
             'INFO',
-            "Added member 'new@email.com' to product group '1'.",
+            "Added member 'new@test.com' to product group '1'.",
         )
         self.assert_log_record(
             'INFO',
-            "Member's (new@email.com) valid_to date set to 2012/01/11.",
+            "Member's (new@test.com) valid_to date set to 2012/02/01.",
         )
         self.assert_log_record(
             'INFO',
-            "Enabled member 'new@email.com'.",
+            "Enabled member 'new@test.com'.",
+        )
+
+    @mock.patch('niteoweb.ipn.core.ipn.DateTime')
+    def test_enable_existing_member(self, DT):
+        """Test enabling an existing member: extending its validity period."""
+        DT.return_value = DateTime('2012/01/01')
+
+        # first create a valid member
+        self.test_enable_new_member()
+
+        # now let's say a month goes by and the member pays the recurring fee
+        DT.return_value = DateTime('2012/02/01')
+        self.ipn.enable_member(
+            email='new@test.com',
+            product_id='1',
+            trans_type='RECUR',
+        )
+
+        # test member valid_to
+        self.assertEqual(
+            api.user.get(username='new@test.com').getProperty('valid_to'),
+            DateTime('2012/03/03')
+        )
+
+        # test event emitted
+        events = list(set(eventtesting.getEvents(IMemberEnabledEvent)))
+        self.assertEquals(len(events), 2)
+        self.assertEquals(events[0].username, 'new@test.com')
+        self.assertEquals(events[1].username, 'new@test.com')
+
+        # test member history
+        self.assert_member_history(
+            username='new@test.com',
+            history=[
+                '2012/01/01 00:00:00|1|SALE|enable_member',
+                '2012/02/01 00:00:00|1|RECUR|enable_member',
+            ],
+        )
+
+        # test log output
+        self.assertEqual(len(self.log.records), 2)
+        self.assert_log_record(
+            'INFO',
+            "Member's (new@test.com) valid_to date set to 2012/03/03.",
+        )
+        self.assert_log_record(
+            'INFO',
+            "Enabled member 'new@test.com'.",
+        )
+
+    @mock.patch('niteoweb.ipn.core.ipn.DateTime')
+    def test_enable_disabled_member(self, DT):
+        """Test enabling a previously disabled member."""
+        DT.return_value = DateTime('2012/01/01')
+
+        # first create a disabled member
+        api.user.create(email='disabled@test.com')
+        api.group.add_user(groupname='disabled', username='disabled@test.com')
+        api.user.revoke_roles(
+            username='disabled@test.com',
+            roles=['Member', ]
+        )
+
+        self.ipn.enable_member(
+            email='disabled@test.com',
+            product_id='1',
+            trans_type='UNCANCEL',
+        )
+
+        # test member is no longer in Disabled group
+        self.assertNotIn(
+            'disabled',
+            [g.id for g in api.group.get_groups(username='disabled@test.com')]
+        )
+
+        # test member has Member role
+        self.assertIn(
+            'Member',
+            api.user.get_roles(username='disabled@test.com'),
+        )
+
+        # test member valid_to
+        self.assertEqual(
+            api.user.get(username='disabled@test.com').getProperty('valid_to'),
+            DateTime('2012/02/01')
+        )
+
+        # test event emitted
+        events = list(set(eventtesting.getEvents(IMemberEnabledEvent)))
+        self.assertEquals(len(events), 1)
+        self.assertEquals(events[0].username, 'disabled@test.com')
+
+        # test member history
+        self.assert_member_history(
+            username='disabled@test.com',
+            history=['2012/01/01 00:00:00|1|UNCANCEL|enable_member']
+        )
+
+        # test log output
+        self.assertEqual(len(self.log.records), 5)
+        self.assert_log_record(
+            'INFO',
+            "Removing member 'disabled@test.com' from Disabled group.",
+        )
+        self.assert_log_record(
+            'INFO',
+            "Granting member 'disabled@test.com' the Member role.",
+        )
+        self.assert_log_record(
+            'INFO',
+            "Added member 'disabled@test.com' to product group '1'.",
+        )
+        self.assert_log_record(
+            'INFO',
+            "Member's (disabled@test.com) valid_to date set to 2012/02/01.",
+        )
+        self.assert_log_record(
+            'INFO',
+            "Enabled member 'disabled@test.com'.",
         )

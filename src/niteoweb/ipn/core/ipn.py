@@ -9,7 +9,6 @@ from niteoweb.ipn.core.interfaces import MemberDisabledEvent
 from niteoweb.ipn.core.interfaces import MemberEnabledEvent
 from niteoweb.ipn.core.interfaces import MissingParamError
 from niteoweb.ipn.core.interfaces import InvalidParamValueError
-from niteoweb.ipn.core.interfaces import ProductGroupNotFoundError
 from plone import api
 from Products.CMFCore.interfaces import ISiteRoot
 from zope.event import notify
@@ -69,8 +68,8 @@ class IPN(grok.MultiAdapter):
         # Product group must exist
         product_group = api.group.get(groupname=product_id)
         if not product_group:
-            raise ProductGroupNotFoundError(
-                "Could not found group with id '%s'." % product_id)
+            raise InvalidParamValueError(
+                "Could not find group with id '%s'." % product_id)
 
         # Create a member object if this is a new member
         if not api.user.get(username=email):
@@ -95,7 +94,7 @@ class IPN(grok.MultiAdapter):
         member = api.user.get(username=email)
 
         # If an existing member is in group Disabled, remove him from there
-        if DISABLED in api.group.get_groups(user=member):
+        if DISABLED in [g.id for g in api.group.get_groups(user=member)]:
             logger.info(
                 "Removing member '%s' from Disabled group." % member.id)
             api.group.remove_user(groupname=DISABLED, user=member)
@@ -117,7 +116,7 @@ class IPN(grok.MultiAdapter):
         product_validity = int(product_group.getProperty('validity'))
         if product_validity < 1:
             raise InvalidParamValueError(
-                "Validity for group '%s' is less than -1: %i"
+                "Validity for group '%s' is not a positive integer: %i"
                 % (product_group.id, product_validity))
 
         valid_to = DateTime() + product_validity
@@ -177,7 +176,7 @@ class IPN(grok.MultiAdapter):
                 "Cannot disable a nonexistent member: '%s'." % email)
             return
 
-        # TODO: remove from all groups and add a not to history which groups
+        # TODO: remove from all groups and add a note to history which groups
 
         # Move to Disabled group if not already there
         if not member in api.user.get_users(groupname=DISABLED):

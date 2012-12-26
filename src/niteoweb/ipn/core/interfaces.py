@@ -21,10 +21,6 @@ class NiteowebIpnCoreError(Exception):
     """Exception class for the niteoweb.ipn.core package."""
 
 
-class ProductGroupNotFoundError(NiteowebIpnCoreError):
-    """Exception for when the product group is not found."""
-
-
 class MissingParamError(NiteowebIpnCoreError):
     """Exception raised when a required parameter is not found."""
 
