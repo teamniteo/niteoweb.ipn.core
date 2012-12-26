@@ -1,8 +1,10 @@
+.coverage
 .installed.cfg
 .mr.developer.cfg
 bin
 develop-eggs
 docs/html
+htmlcov/
 include
 lib
 parts

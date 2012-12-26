@@ -33,6 +33,43 @@ class TestDisableMember(IntegrationTestCase):
         self.log.clear()
         eventtesting.clearEvents()
 
+    def test_required_parameters(self):
+        """Test that parameters are required."""
+        from niteoweb.ipn.core.interfaces import MissingParamError
+
+        with self.assertRaises(MissingParamError) as cm:
+            self.ipn.disable_member(
+                email=None,
+                product_id='1',
+                trans_type='CANCEL',
+            )
+        self.assertEquals(
+            cm.exception.message,
+            "Parameter 'email' is missing.",
+        )
+
+        with self.assertRaises(MissingParamError) as cm:
+            self.ipn.disable_member(
+                email='enabled@email.com',
+                product_id=None,
+                trans_type='CANCEL',
+            )
+        self.assertEquals(
+            cm.exception.message,
+            "Parameter 'product_id' is missing.",
+        )
+
+        with self.assertRaises(MissingParamError) as cm:
+            self.ipn.disable_member(
+                email='enabled@email.com',
+                product_id='1',
+                trans_type=None,
+            )
+        self.assertEquals(
+            cm.exception.message,
+            "Parameter 'trans_type' is missing.",
+        )
+
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
     def test_disable_member(self, DT):
         """Test default execution of the disable_member() action."""
@@ -96,3 +133,37 @@ class TestDisableMember(IntegrationTestCase):
             'WARNING',
             "Cannot disable a nonexistent member: 'nonexistent@email.com'.",
         )
+
+    def test_member_already_in_disabled_group(self):
+        """Test that adding to disabled group is skipped if member is already
+        in the group."""
+        api.group.add_user(groupname='disabled', username='enabled@email.com')
+        self.ipn.disable_member(
+            email='enabled@email.com',
+            product_id='1',
+            trans_type='CANCEL',
+        )
+
+        # test log output
+        for record in self.log.records:
+            self.assertNotEquals(
+                record.getMessage(),
+                "Adding member 'enabled@email.com' to Disabled group.",
+            )
+
+    def test_member_already_without_member_role(self):
+        """Test that revoking Member role is skipped if member is already
+        without this role."""
+        api.user.revoke_roles(username='enabled@email.com', roles=['Member', ])
+        self.ipn.disable_member(
+            email='enabled@email.com',
+            product_id='1',
+            trans_type='CANCEL',
+        )
+
+        # test log output
+        for record in self.log.records:
+            self.assertNotEquals(
+                record.getMessage(),
+                "Revoking member 'enabled@email.com' the Member role.",
+            )

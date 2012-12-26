@@ -177,6 +177,8 @@ class IPN(grok.MultiAdapter):
                 "Cannot disable a nonexistent member: '%s'." % email)
             return
 
+        # TODO: remove from all groups and add a not to history which groups
+
         # Move to Disabled group if not already there
         if not member in api.user.get_users(groupname=DISABLED):
             logger.info("Adding member '%s' to Disabled group." % member.id)

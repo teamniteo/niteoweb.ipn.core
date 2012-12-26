@@ -14,6 +14,14 @@ docs/html/index.html: docs/*.rst src/niteoweb/ipn/core/*.py src/niteoweb/ipn/cor
 	@touch $@
 	@echo "Documentation was generated at '$@'."
 
+coverage: htmlcov/index.html
+
+htmlcov/index.html: src/niteoweb/ipn/core/*.py src/niteoweb/ipn/core/tests/*.py bin/coverage
+	@bin/coverage run --source=./src/niteoweb/ipn/core/ --branch bin/test
+	@bin/coverage html -i
+	@touch $@
+	@echo "Coverage report was generated at '$@'."
+
 bin/sphinx-build: .installed.cfg
 	@touch $@
 

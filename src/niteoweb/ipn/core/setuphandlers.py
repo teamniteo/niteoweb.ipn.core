@@ -14,10 +14,10 @@ def setupVarious(context):
     """
 
     # We check from our GenericSetup context whether we are running
-    # add-on installation for your product or any other proudct
+    # add-on installation for your product or any other product
     if context.readDataFile('niteoweb.ipn.core.marker.txt') is None:
         # Not your add-on
-        return
+        return  # pragma: no cover
 
     # add timeout field to group properties
     groupdata = api.portal.get_tool('portal_groupdata')

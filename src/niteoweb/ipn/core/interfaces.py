@@ -9,10 +9,10 @@ from zope.interface import implements
 class IIPN(Interface):
     """Definition of the IPN adapter."""
 
-    def enable_member():
+    def enable_member():  # pragma: no cover
         """Enable an existing or create a new member."""
 
-    def disable_member():
+    def disable_member():  # pragma: no cover
         """Disable an existing member."""
 
 
