@@ -86,6 +86,7 @@ class IPN(grok.MultiAdapter):
 
             logger.info("Creating a new member: %s" % email)
             properties = dict(
+                product_id=product_id,
                 fullname=fullname,
                 affiliate=affiliate,
             )
@@ -192,8 +193,12 @@ class IPN(grok.MultiAdapter):
         if other_groups:
             note = 'removed from groups: '
             for group in other_groups:
+                logger.info(
+                    "Removing member '%s' from group '%s."
+                    % (member.id, group.id)
+                )
                 api.group.remove_user(group=group, user=member)
-            note += '%s, ' % group.id
+                note += '%s, ' % group.id
 
         # Revoke 'Member' role which "disables" the user
         if 'Member' in api.user.get_roles(user=member):

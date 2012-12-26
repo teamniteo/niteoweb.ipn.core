@@ -13,6 +13,7 @@ from zope.testing.loggingsupport import InstalledHandler
 import mock
 
 
+# split this in two classes TestUseCases and TestConstraints
 class TestEnableMember(IntegrationTestCase):
     """Test runtime flow through the enable_member() action."""
 
@@ -151,7 +152,13 @@ class TestEnableMember(IntegrationTestCase):
         )
 
         # test member exists
-        self.assertTrue(api.user.get(username='new@test.com'))
+        member = api.user.get(username='new@test.com')
+        self.assertTrue(member)
+
+        # test member properties set correctly
+        self.assertEqual(member.getProperty('product_id'), '1')
+        self.assertEqual(member.getProperty('fullname'), 'New Member')
+        self.assertEqual(member.getProperty('affiliate'), 'aff@test.com')
 
         # test member is in product group
         self.assertIn(

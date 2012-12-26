@@ -61,7 +61,12 @@ Assumptions
 * When niteoweb.ipn.core creates a new member object, the registration email is
   **not** sent. Your third-party code should take care of this (for example by
   subscribing to the IPrincipalCreatedEvent emitted by PAS).
-* TODO: cronjob
+* Whenever a member is enabled, a 'valid_to' property is set on the member
+  object to represent until which day should this member be allowed to use the
+  site. You then need to setup a cronjob that calls ``@@validity`` view every
+  day to disable those members whose validity period has elapsed. In the
+  plone.app.registry control panel you can set a secret that needs to be passed
+  as a request parameter to the ``@@validity`` view.
 
 Installation
 ============

@@ -127,10 +127,14 @@ class TestDisableMember(IntegrationTestCase):
         )
 
         # test log output
-        self.assertEqual(len(self.log.records), 3)
+        self.assertEqual(len(self.log.records), 4)
         self.assert_log_record(
             'INFO',
             "Adding member 'enabled@test.com' to Disabled group.",
+        )
+        self.assert_log_record(
+            'INFO',
+            "Removing member 'enabled@test.com' from group '1.",
         )
         self.assert_log_record(
             'INFO',

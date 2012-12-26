@@ -3,6 +3,8 @@
 
 from niteoweb.ipn.core.testing import IntegrationTestCase
 from plone import api
+from plone.registry.interfaces import IRegistry
+from zope.component import getUtility
 
 import mock
 
@@ -35,6 +37,14 @@ class TestInstall(IntegrationTestCase):
     def test_disabled_group_created(self):
         """Test that Disabled group was created."""
         self.assertTrue(api.group.get(groupname='Disabled'))
+
+    # registry.xml
+    def test_record_validity_secret(self):
+        """Test that the validity.secret record is in the registry."""
+        registry = getUtility(IRegistry)
+        record_secretkey = registry.records[
+            'niteoweb.ipn.core.validity.secret']
+        self.assertEquals(record_secretkey.value, 'secret')
 
     # propertiestool.xml
     def test_portal_tabs_auto_creation_disabled(self):
