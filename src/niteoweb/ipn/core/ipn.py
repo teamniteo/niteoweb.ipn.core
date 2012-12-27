@@ -178,9 +178,8 @@ class IPN(grok.MultiAdapter):
 
         member = api.user.get(username=email)
         if not member:
-            logger.warning(
+            raise InvalidParamValueError(
                 "Cannot disable a nonexistent member: '%s'." % email)
-            return
 
         # Move to Disabled group if not already there
         if not member in api.user.get_users(groupname=DISABLED):

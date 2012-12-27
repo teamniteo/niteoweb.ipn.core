@@ -13,26 +13,18 @@ from zope.testing.loggingsupport import InstalledHandler
 import mock
 
 
-# split this in two classes TestUseCases and TestConstraints
-class TestEnableMember(IntegrationTestCase):
-    """Test runtime flow through the enable_member() action."""
+class TestConstraints(IntegrationTestCase):
+    """Test different constraints on enable_member() action."""
 
     def setUp(self):
         """Custom shared utility setup for tests."""
         self.portal = self.layer['portal']
         self.ipn = queryAdapter(self.portal, IIPN)
-        self.log = InstalledHandler('niteoweb.ipn.core')
-        eventtesting.setUp()
 
         # create a test product group and set it's validity
         api.group.create(groupname='1')
         group = api.group.get(groupname='1')
         group.setGroupProperties(mapping={'validity': 31})
-
-    def tearDown(self):
-        """Clean up after yourself."""
-        self.log.clear()
-        eventtesting.clearEvents()
 
     def test_required_parameters(self):
         """Test that parameters are required."""
@@ -137,6 +129,29 @@ class TestEnableMember(IntegrationTestCase):
             cm.exception.message,
             "Validity for group '1' is not a positive integer: 0",
         )
+
+
+class TestEnableMember(IntegrationTestCase):
+    """Test runtime flow through the enable_member() action for most common
+    use cases.
+    """
+
+    def setUp(self):
+        """Custom shared utility setup for tests."""
+        self.portal = self.layer['portal']
+        self.ipn = queryAdapter(self.portal, IIPN)
+        self.log = InstalledHandler('niteoweb.ipn.core')
+        eventtesting.setUp()
+
+        # create a test product group and set it's validity
+        api.group.create(groupname='1')
+        group = api.group.get(groupname='1')
+        group.setGroupProperties(mapping={'validity': 31})
+
+    def tearDown(self):
+        """Clean up after yourself."""
+        self.log.clear()
+        eventtesting.clearEvents()
 
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
     def test_enable_new_member(self, DT):

@@ -13,25 +13,13 @@ from zope.testing.loggingsupport import InstalledHandler
 import mock
 
 
-class TestDisableMember(IntegrationTestCase):
-    """Test runtime flow through the disable_member() action."""
+class TestConstraints(IntegrationTestCase):
+    """Test different constraints on disable_member() action."""
 
     def setUp(self):
         """Custom shared utility setup for tests."""
         self.portal = self.layer['portal']
         self.ipn = queryAdapter(self.portal, IIPN)
-        self.log = InstalledHandler('niteoweb.ipn.core')
-        eventtesting.setUp()
-
-        # create a test member and a test product group
-        api.user.create(email='enabled@test.com')
-        api.group.create(groupname='1')
-        api.group.add_user(username='enabled@test.com', groupname='1')
-
-    def tearDown(self):
-        """Clean up after yourself."""
-        self.log.clear()
-        eventtesting.clearEvents()
 
     def test_required_parameters(self):
         """Test that parameters are required."""
@@ -72,18 +60,40 @@ class TestDisableMember(IntegrationTestCase):
 
     def test_nonexistent_member(self):
         """Test disabling a non-existing member."""
-        self.ipn.disable_member(
-            email='nonexistent@test.com',
-            product_id='1',
-            trans_type='CANCEL',
-        )
-
-        # test log output
-        self.assertEqual(len(self.log.records), 1)
-        self.assert_log_record(
-            'WARNING',
+        from niteoweb.ipn.core.interfaces import InvalidParamValueError
+        with self.assertRaises(InvalidParamValueError) as cm:
+            self.ipn.disable_member(
+                email='nonexistent@test.com',
+                product_id='1',
+                trans_type='CANCEL',
+            )
+        self.assertEquals(
+            cm.exception.message,
             "Cannot disable a nonexistent member: 'nonexistent@test.com'.",
         )
+
+
+class TestUseCases(IntegrationTestCase):
+    """Test runtime flow through the disable_member() action for most common
+    use cases.
+    """
+
+    def setUp(self):
+        """Custom shared utility setup for tests."""
+        self.portal = self.layer['portal']
+        self.ipn = queryAdapter(self.portal, IIPN)
+        self.log = InstalledHandler('niteoweb.ipn.core')
+        eventtesting.setUp()
+
+        # create a test member and a test product group
+        api.user.create(email='enabled@test.com')
+        api.group.create(groupname='1')
+        api.group.add_user(username='enabled@test.com', groupname='1')
+
+    def tearDown(self):
+        """Clean up after yourself."""
+        self.log.clear()
+        eventtesting.clearEvents()
 
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
     def test_disable_enabled_member(self, DT):

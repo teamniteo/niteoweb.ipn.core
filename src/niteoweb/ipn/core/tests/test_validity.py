@@ -114,5 +114,5 @@ class TestValidity(IntegrationTestCase):
             'INFO',
             "Disabled member 'new@test.com'.",
         )
-        # odpri in zapri izvajanje z "START disable_member:<trans_type>" in
-        # END disable_member:<trans_type>
+        # TODO: odpri in zapri izvajanje z "START disable_member:<trans_type>"
+        # in END disable_member:<trans_type>
