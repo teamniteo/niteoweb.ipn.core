@@ -5,14 +5,7 @@ version = 2.7
 python = bin/python
 options =
 
-all: docs tests
-
-docs: docs/html/index.html
-
-docs/html/index.html: docs/*.rst src/niteoweb/ipn/core/*.py src/niteoweb/ipn/core/tests/*.py bin/sphinx-build
-	bin/sphinx-build docs docs/html
-	@touch $@
-	@echo "Documentation was generated at '$@'."
+all: tests
 
 coverage: htmlcov/index.html
 
@@ -21,9 +14,6 @@ htmlcov/index.html: src/niteoweb/ipn/core/*.py src/niteoweb/ipn/core/tests/*.py 
 	@bin/coverage html -i
 	@touch $@
 	@echo "Coverage report was generated at '$@'."
-
-bin/sphinx-build: .installed.cfg
-	@touch $@
 
 .installed.cfg: bin/buildout buildout.cfg buildout.d/*.cfg setup.py
 	bin/buildout $(options)
@@ -44,7 +34,7 @@ tests: .installed.cfg
 	@for zcml in `find src/niteoweb/ipn/core -name "*.zcml"` ; do bin/zptlint $$zcml; done
 
 clean:
-	@rm -rf .installed.cfg bin docs/html parts develop-eggs \
+	@rm -rf .installed.cfg bin parts develop-eggs htmlcov \
 		src/niteoweb.ipn.core.egg-info lib include .Python
 
-.PHONY: all docs tests clean
+.PHONY: all tests clean
