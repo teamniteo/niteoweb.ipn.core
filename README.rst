@@ -7,7 +7,6 @@ Payment Notification providers (such as PayPal, JVZoo, Click2Sell, etc.)
 
 * `Source code @ GitHub <https://github.com/niteoweb/niteoweb.ipn.core>`_
 * `Releases @ PyPI <http://pypi.python.org/pypi/niteoweb.ipn.core>`_
-* `Documentation @ ReadTheDocs <http://niteowebipncore.readthedocs.org>`_
 * `Continuous Integration @ Travis-CI <http://travis-ci.org/niteoweb/niteoweb.ipn.core>`_
 
 Subpackages
@@ -16,7 +15,7 @@ Subpackages
 You probably do not want to use this package on it's own, but rather use one
 of its sub-packages:
 
- * `niteoweb.ipn.jvz <http://pypi.python.org/pypi/niteoweb.ipn.jvz>`_
+ * `niteoweb.ipn.jvzoo <http://pypi.python.org/pypi/niteoweb.ipn.jvzoo>`_
  * `niteoweb.ipn.c2s <http://pypi.python.org/pypi/niteoweb.ipn.c2s>`_
 
 How it works
@@ -31,7 +30,7 @@ the code that these sub-packages would have to otherwise duplicate:
  * Firing off events that your project code can catch and perform custom tasks
    on.
 
-The following information is stored in member data for later use:
+The following information is stored as member properties for later use:
 
     ``product_id``
         IPN provider's `Product ID` of the purchased item.
