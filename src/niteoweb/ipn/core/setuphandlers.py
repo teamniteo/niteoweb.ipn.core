@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tests for Dummy Spinner."""
+"""Custom import step for niteoweb.ipn.core."""
 
 from plone import api
 from niteoweb.ipn.core import VALIDITY
