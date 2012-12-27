@@ -97,7 +97,11 @@ class TestValidity(IntegrationTestCase):
         )
 
         # test log output
-        self.assertEqual(len(self.log.records), 4)
+        self.assertEqual(len(self.log.records), 5)
+        self.assert_log_record(
+            'INFO',
+            "START disable_member:cronjob for 'new@test.com'.",
+        )
         self.assert_log_record(
             'INFO',
             "Adding member 'new@test.com' to Disabled group.",
@@ -112,7 +116,5 @@ class TestValidity(IntegrationTestCase):
         )
         self.assert_log_record(
             'INFO',
-            "Disabled member 'new@test.com'.",
+            "END disable_member:cronjob for 'new@test.com'.",
         )
-        # TODO: odpri in zapri izvajanje z "START disable_member:<trans_type>"
-        # in END disable_member:<trans_type>

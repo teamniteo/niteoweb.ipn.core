@@ -137,7 +137,11 @@ class TestUseCases(IntegrationTestCase):
         )
 
         # test log output
-        self.assertEqual(len(self.log.records), 4)
+        self.assertEqual(len(self.log.records), 5)
+        self.assert_log_record(
+            'INFO',
+            "START disable_member:CANCEL for 'enabled@test.com'.",
+        )
         self.assert_log_record(
             'INFO',
             "Adding member 'enabled@test.com' to Disabled group.",
@@ -152,7 +156,7 @@ class TestUseCases(IntegrationTestCase):
         )
         self.assert_log_record(
             'INFO',
-            "Disabled member 'enabled@test.com'.",
+            "END disable_member:CANCEL for 'enabled@test.com'.",
         )
 
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')

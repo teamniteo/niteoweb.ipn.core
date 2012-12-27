@@ -56,6 +56,7 @@ class IPN(grok.MultiAdapter):
         :returns: None
 
         """
+        logger.info("START enable_member:%s for '%s'." % (trans_type, email))
         note = ''
 
         if not email:
@@ -144,7 +145,7 @@ class IPN(grok.MultiAdapter):
         notify(MemberEnabledEvent(member.id))
 
         # Done!
-        logger.info("Enabled member '%s'." % email)
+        logger.info("END enable_member:%s for '%s'." % (trans_type, email))
 
     def disable_member(
         self,
@@ -165,6 +166,7 @@ class IPN(grok.MultiAdapter):
         :returns: None
 
         """
+        logger.info("START disable_member:%s for '%s'." % (trans_type, email))
         note = ''
 
         if not email:
@@ -220,7 +222,7 @@ class IPN(grok.MultiAdapter):
         notify(MemberDisabledEvent(member.id))
 
         # Done!
-        logger.info("Disabled member '%s'." % member.id)
+        logger.info("END disable_member:%s for '%s'." % (trans_type, email))
 
     def _add_to_member_history(self, member, msg):
         """Add a record to member's history.

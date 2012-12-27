@@ -199,7 +199,11 @@ class TestEnableMember(IntegrationTestCase):
         )
 
         # test log output
-        self.assertEqual(len(self.log.records), 4)
+        self.assertEqual(len(self.log.records), 5)
+        self.assert_log_record(
+            'INFO',
+            "START enable_member:SALE for 'new@test.com'.",
+        )
         self.assert_log_record(
             'INFO',
             "Creating a new member: new@test.com",
@@ -214,7 +218,7 @@ class TestEnableMember(IntegrationTestCase):
         )
         self.assert_log_record(
             'INFO',
-            "Enabled member 'new@test.com'.",
+            "END enable_member:SALE for 'new@test.com'.",
         )
 
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
@@ -256,14 +260,18 @@ class TestEnableMember(IntegrationTestCase):
         )
 
         # test log output
-        self.assertEqual(len(self.log.records), 2)
+        self.assertEqual(len(self.log.records), 3)
+        self.assert_log_record(
+            'INFO',
+            "START enable_member:RECUR for 'new@test.com'.",
+        )
         self.assert_log_record(
             'INFO',
             "Member's (new@test.com) valid_to date set to 2012/03/03.",
         )
         self.assert_log_record(
             'INFO',
-            "Enabled member 'new@test.com'.",
+            "END enable_member:RECUR for 'new@test.com'.",
         )
 
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
@@ -315,7 +323,11 @@ class TestEnableMember(IntegrationTestCase):
         )
 
         # test log output
-        self.assertEqual(len(self.log.records), 5)
+        self.assertEqual(len(self.log.records), 6)
+        self.assert_log_record(
+            'INFO',
+            "START enable_member:UNCANCEL for 'disabled@test.com'.",
+        )
         self.assert_log_record(
             'INFO',
             "Removing member 'disabled@test.com' from Disabled group.",
@@ -334,5 +346,5 @@ class TestEnableMember(IntegrationTestCase):
         )
         self.assert_log_record(
             'INFO',
-            "Enabled member 'disabled@test.com'.",
+            "END enable_member:UNCANCEL for 'disabled@test.com'.",
         )
