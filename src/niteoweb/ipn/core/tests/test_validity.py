@@ -37,6 +37,18 @@ class TestValidity(IntegrationTestCase):
         self.log.clear()
         eventtesting.clearEvents()
 
+    def test_wrong_secret(self):
+        """Test secret is required to access @@validity."""
+        view = self.portal.restrictedTraverse('validity')
+        err_msg = "Wrong secret. Please configure it in control panel."
+
+        # empty secret
+        self.assertEquals(view.render(), err_msg)
+
+        # wrong secret
+        self.request['secret'] = 'wrong secret'
+        self.assertEquals(view.render(), err_msg)
+
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
     def test_validity(self, DT):
         """Integration test of @@validity view."""
