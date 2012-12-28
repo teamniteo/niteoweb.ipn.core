@@ -22,8 +22,8 @@ class TestConstraints(IntegrationTestCase):
         self.ipn = queryAdapter(self.portal, IIPN)
 
         # create a test product group and set it's validity
-        api.group.create(groupname='1')
-        group = api.group.get(groupname='1')
+        api.group.create(groupname='ipn_1')
+        group = api.group.get(groupname='ipn_1')
         group.setGroupProperties(mapping={'validity': 31})
 
     def test_required_parameters(self):
@@ -114,7 +114,7 @@ class TestConstraints(IntegrationTestCase):
         positive integer."""
         from niteoweb.ipn.core.interfaces import InvalidParamValueError
 
-        group = api.group.get(groupname='1')
+        group = api.group.get(groupname='ipn_1')
         group.setGroupProperties(mapping={'validity': 0})
 
         with self.assertRaises(InvalidParamValueError) as cm:
@@ -127,7 +127,7 @@ class TestConstraints(IntegrationTestCase):
             )
         self.assertEquals(
             cm.exception.message,
-            "Validity for group '1' is not a positive integer: 0",
+            "Validity for group 'ipn_1' is not a positive integer: 0",
         )
 
 
@@ -144,8 +144,8 @@ class TestEnableMember(IntegrationTestCase):
         eventtesting.setUp()
 
         # create a test product group and set it's validity
-        api.group.create(groupname='1')
-        group = api.group.get(groupname='1')
+        api.group.create(groupname='ipn_1')
+        group = api.group.get(groupname='ipn_1')
         group.setGroupProperties(mapping={'validity': 31})
 
     def tearDown(self):
@@ -178,7 +178,7 @@ class TestEnableMember(IntegrationTestCase):
         # test member is in product group
         self.assertIn(
             'new@test.com',
-            [user.id for user in api.user.get_users(groupname='1')]
+            [user.id for user in api.user.get_users(groupname='ipn_1')]
         )
 
         # test member valid_to
@@ -210,7 +210,7 @@ class TestEnableMember(IntegrationTestCase):
         )
         self.assert_log_record(
             'INFO',
-            "Added member 'new@test.com' to product group '1'.",
+            "Added member 'new@test.com' to product group 'ipn_1'.",
         )
         self.assert_log_record(
             'INFO',
@@ -338,7 +338,7 @@ class TestEnableMember(IntegrationTestCase):
         )
         self.assert_log_record(
             'INFO',
-            "Added member 'disabled@test.com' to product group '1'.",
+            "Added member 'disabled@test.com' to product group 'ipn_1'.",
         )
         self.assert_log_record(
             'INFO',

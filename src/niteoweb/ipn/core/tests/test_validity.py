@@ -55,8 +55,8 @@ class TestValidity(IntegrationTestCase):
         DT.return_value = DateTime('2012/01/01')
 
         # first, let's create a member and enable it
-        api.group.create(groupname='1')
-        group = api.group.get(groupname='1')
+        api.group.create(groupname='ipn_1')
+        group = api.group.get(groupname='ipn_1')
         group.setGroupProperties(mapping={'validity': 31})
         self.ipn.enable_member(
             email='new@test.com',
@@ -105,7 +105,7 @@ class TestValidity(IntegrationTestCase):
             username='new@test.com',
             history=['2012/01/01 00:00:00|enable_member|1|SALE|',
                      '2012/02/02 00:00:00|disable_member|1|cronjob|'
-                     'removed from groups: 1, ']
+                     'removed from groups: ipn_1, ']
         )
 
         # test log output
@@ -120,7 +120,7 @@ class TestValidity(IntegrationTestCase):
         )
         self.assert_log_record(
             'INFO',
-            "Removing member 'new@test.com' from group '1.",
+            "Removing member 'new@test.com' from group 'ipn_1'.",
         )
         self.assert_log_record(
             'INFO',

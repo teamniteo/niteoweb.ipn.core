@@ -4,6 +4,7 @@
 from DateTime import DateTime
 from five import grok
 from niteoweb.ipn.core import DISABLED
+from niteoweb.ipn.core import PGI
 from niteoweb.ipn.core.interfaces import IIPN
 from niteoweb.ipn.core.interfaces import MemberDisabledEvent
 from niteoweb.ipn.core.interfaces import MemberEnabledEvent
@@ -69,7 +70,7 @@ class IPN(grok.MultiAdapter):
             raise MissingParamError("Parameter 'trans_type' is missing.")
 
         # Product group must exist
-        product_group = api.group.get(groupname=product_id)
+        product_group = api.group.get(groupname=PGI % product_id)
         if not product_group:
             raise InvalidParamValueError(
                 "Could not find group with id '%s'." % product_id)
@@ -195,7 +196,7 @@ class IPN(grok.MultiAdapter):
             note = 'removed from groups: '
             for group in other_groups:
                 logger.info(
-                    "Removing member '%s' from group '%s."
+                    "Removing member '%s' from group '%s'."
                     % (member.id, group.id)
                 )
                 api.group.remove_user(group=group, user=member)

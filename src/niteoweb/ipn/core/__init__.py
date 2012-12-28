@@ -12,6 +12,9 @@ members in that group."""
 DISABLED = 'disabled'
 """Groupname of group containing disabled members."""
 
+PGI = 'ipn_%s'
+"""Product Group ID, for calculating id of product group out of product id."""
+
 
 def initialize(context):
     """Initializer called when used as a Zope 2 product."""

@@ -87,8 +87,8 @@ class TestUseCases(IntegrationTestCase):
 
         # create a test member and a test product group
         api.user.create(email='enabled@test.com')
-        api.group.create(groupname='1')
-        api.group.add_user(username='enabled@test.com', groupname='1')
+        api.group.create(groupname='ipn_1')
+        api.group.add_user(username='enabled@test.com', groupname='ipn_1')
 
     def tearDown(self):
         """Clean up after yourself."""
@@ -133,7 +133,7 @@ class TestUseCases(IntegrationTestCase):
         self.assert_member_history(
             username='enabled@test.com',
             history=['2012/01/01 00:00:00|disable_member|1|CANCEL|'
-                     'removed from groups: 1, ']
+                     'removed from groups: ipn_1, ']
         )
 
         # test log output
@@ -148,7 +148,7 @@ class TestUseCases(IntegrationTestCase):
         )
         self.assert_log_record(
             'INFO',
-            "Removing member 'enabled@test.com' from group '1.",
+            "Removing member 'enabled@test.com' from group 'ipn_1'.",
         )
         self.assert_log_record(
             'INFO',
@@ -188,7 +188,7 @@ class TestUseCases(IntegrationTestCase):
             username='enabled@test.com',
             history=[
                 '2012/01/01 00:00:00|disable_member|1|CANCEL|'
-                'removed from groups: 1, ',
+                'removed from groups: ipn_1, ',
                 '2012/02/01 00:00:00|disable_member|1|CANCEL|',
             ]
         )
