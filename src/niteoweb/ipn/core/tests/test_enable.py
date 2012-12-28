@@ -156,7 +156,7 @@ class TestEnableMember(IntegrationTestCase):
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
     def test_enable_new_member(self, DT):
         """Test creating a new member with enable_member() action."""
-        DT.return_value = DateTime('2012/01/01')
+        DT.return_value = DateTime('2012-01-01')
 
         self.ipn.enable_member(
             email='new@test.com',
@@ -184,7 +184,7 @@ class TestEnableMember(IntegrationTestCase):
         # test member valid_to
         self.assertEqual(
             api.user.get(username='new@test.com').getProperty('valid_to'),
-            DateTime('2012/02/01')
+            DateTime('2012-02-01')
         )
 
         # test event emitted
@@ -195,7 +195,7 @@ class TestEnableMember(IntegrationTestCase):
         # test member history
         self.assert_member_history(
             username='new@test.com',
-            history=['2012/01/01 00:00:00|enable_member|1|SALE|']
+            history=['2012-01-01 01:00:00|enable_member|1|SALE|']
         )
 
         # test log output
@@ -214,7 +214,7 @@ class TestEnableMember(IntegrationTestCase):
         )
         self.assert_log_record(
             'INFO',
-            "Member's (new@test.com) valid_to date set to 2012/02/01.",
+            "Member's (new@test.com) valid_to date set to 2012-02-01.",
         )
         self.assert_log_record(
             'INFO',
@@ -225,13 +225,13 @@ class TestEnableMember(IntegrationTestCase):
     def test_enable_enabled_member(self, DT):
         """Test enabling an already enabled member, meaning extending its
         validity period."""
-        DT.return_value = DateTime('2012/01/01')
+        DT.return_value = DateTime('2012-01-01')
 
         # first create a valid member
         self.test_enable_new_member()
 
         # now let's say a month goes by and the member pays the recurring fee
-        DT.return_value = DateTime('2012/02/01')
+        DT.return_value = DateTime('2012-02-01')
         self.ipn.enable_member(
             email='new@test.com',
             product_id='1',
@@ -241,7 +241,7 @@ class TestEnableMember(IntegrationTestCase):
         # test member valid_to
         self.assertEqual(
             api.user.get(username='new@test.com').getProperty('valid_to'),
-            DateTime('2012/03/03')
+            DateTime('2012-03-03')
         )
 
         # test event emitted
@@ -254,8 +254,8 @@ class TestEnableMember(IntegrationTestCase):
         self.assert_member_history(
             username='new@test.com',
             history=[
-                '2012/01/01 00:00:00|enable_member|1|SALE|',
-                '2012/02/01 00:00:00|enable_member|1|RECUR|',
+                '2012-01-01 01:00:00|enable_member|1|SALE|',
+                '2012-02-01 01:00:00|enable_member|1|RECUR|',
             ],
         )
 
@@ -267,7 +267,7 @@ class TestEnableMember(IntegrationTestCase):
         )
         self.assert_log_record(
             'INFO',
-            "Member's (new@test.com) valid_to date set to 2012/03/03.",
+            "Member's (new@test.com) valid_to date set to 2012-03-03.",
         )
         self.assert_log_record(
             'INFO',
@@ -277,7 +277,7 @@ class TestEnableMember(IntegrationTestCase):
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
     def test_enable_disabled_member(self, DT):
         """Test enabling a previously disabled member."""
-        DT.return_value = DateTime('2012/01/01')
+        DT.return_value = DateTime('2012-01-01')
 
         # first create a disabled member
         api.user.create(email='disabled@test.com')
@@ -308,7 +308,7 @@ class TestEnableMember(IntegrationTestCase):
         # test member valid_to
         self.assertEqual(
             api.user.get(username='disabled@test.com').getProperty('valid_to'),
-            DateTime('2012/02/01')
+            DateTime('2012-02-01')
         )
 
         # test event emitted
@@ -319,7 +319,7 @@ class TestEnableMember(IntegrationTestCase):
         # test member history
         self.assert_member_history(
             username='disabled@test.com',
-            history=['2012/01/01 00:00:00|enable_member|1|UNCANCEL|']
+            history=['2012-01-01 01:00:00|enable_member|1|UNCANCEL|']
         )
 
         # test log output
@@ -342,7 +342,7 @@ class TestEnableMember(IntegrationTestCase):
         )
         self.assert_log_record(
             'INFO',
-            "Member's (disabled@test.com) valid_to date set to 2012/02/01.",
+            "Member's (disabled@test.com) valid_to date set to 2012-02-01.",
         )
         self.assert_log_record(
             'INFO',
