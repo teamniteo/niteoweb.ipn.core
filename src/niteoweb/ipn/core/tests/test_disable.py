@@ -98,7 +98,7 @@ class TestUseCases(IntegrationTestCase):
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
     def test_disable_enabled_member(self, DT):
         """Test default execution of the disable_member() action."""
-        DT.return_value = DateTime('2012-01-01')
+        DT.return_value = DateTime('2012/01/01')
 
         self.ipn.disable_member(
             email='enabled@test.com',
@@ -132,7 +132,7 @@ class TestUseCases(IntegrationTestCase):
         # test member history
         self.assert_member_history(
             username='enabled@test.com',
-            history=['2012-01-01 01:00:00|disable_member|1|CANCEL|'
+            history=['2012/01/01 00:00:00|disable_member|1|CANCEL|'
                      'removed from groups: ipn_1, ']
         )
 
@@ -163,14 +163,14 @@ class TestUseCases(IntegrationTestCase):
     def test_disable_disabled_member(self, DT):
         """Test disabling an already disabled member. This should not happen
         often, but it still could."""
-        DT.return_value = DateTime('2012-01-01')
+        DT.return_value = DateTime('2012/01/01')
 
         # first disable a member
         self.test_disable_enabled_member()
 
         # now let's say a month goes by and we get another notification from
         # IPN that this member is disabled
-        DT.return_value = DateTime('2012-02-01')
+        DT.return_value = DateTime('2012/02/01')
         self.ipn.disable_member(
             email='enabled@test.com',
             product_id='1',
@@ -187,9 +187,9 @@ class TestUseCases(IntegrationTestCase):
         self.assert_member_history(
             username='enabled@test.com',
             history=[
-                '2012-01-01 01:00:00|disable_member|1|CANCEL|'
+                '2012/01/01 00:00:00|disable_member|1|CANCEL|'
                 'removed from groups: ipn_1, ',
-                '2012-02-01 01:00:00|disable_member|1|CANCEL|',
+                '2012/02/01 00:00:00|disable_member|1|CANCEL|',
             ]
         )
 

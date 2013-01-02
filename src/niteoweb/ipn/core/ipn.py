@@ -128,13 +128,13 @@ class IPN(grok.MultiAdapter):
         member.setMemberProperties(mapping={'valid_to': valid_to})
         logger.info(
             "Member's (%s) valid_to date set to %s."
-            % (member.id, valid_to.strftime('%Y-%m-%d')))
+            % (member.id, valid_to.strftime('%Y/%m/%d')))
 
         # Add entry to member history
         self._add_to_member_history(
             member,
             '{timestamp}|{action}|{product_id}|{ttype}|{note}'.format(
-                timestamp=DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+                timestamp=DateTime().strftime('%Y/%m/%d %H:%M:%S'),
                 product_id=product_id,
                 ttype=trans_type,
                 action='enable_member',
@@ -211,7 +211,7 @@ class IPN(grok.MultiAdapter):
         self._add_to_member_history(
             member,
             '{timestamp}|{action}|{product_id}|{ttype}|{note}'.format(
-                timestamp=DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+                timestamp=DateTime().strftime('%Y/%m/%d %H:%M:%S'),
                 product_id=product_id,
                 ttype=trans_type,
                 action='disable_member',

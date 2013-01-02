@@ -52,7 +52,7 @@ class TestValidity(IntegrationTestCase):
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
     def test_validity(self, DT):
         """Integration test of @@validity view."""
-        DT.return_value = DateTime('2012-01-01')
+        DT.return_value = DateTime('2012/01/01')
 
         # first, let's create a member and enable it
         api.group.create(groupname='ipn_1')
@@ -73,7 +73,7 @@ class TestValidity(IntegrationTestCase):
         # all is prepared, let's run @@validity as anonymous user, a
         # month after the initial sale
         logout()
-        DT.return_value = DateTime('2012-02-02')
+        DT.return_value = DateTime('2012/02/02')
         self.request['secret'] = 'secret'
         view = self.portal.restrictedTraverse('validity')
         view.render()
@@ -103,8 +103,8 @@ class TestValidity(IntegrationTestCase):
         # test member history
         self.assert_member_history(
             username='new@test.com',
-            history=['2012-01-01 01:00:00|enable_member|1|SALE|',
-                     '2012-02-02 01:00:00|disable_member|1|cronjob|'
+            history=['2012/01/01 00:00:00|enable_member|1|SALE|',
+                     '2012/02/02 00:00:00|disable_member|1|cronjob|'
                      'removed from groups: ipn_1, ']
         )
 
