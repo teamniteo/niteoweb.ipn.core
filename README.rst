@@ -12,11 +12,11 @@ Payment Notification providers (such as PayPal, JVZoo, Click2Sell, etc.)
 Subpackages
 ===========
 
-You probably do not want to use this package on it's own, but rather use one
+You probably do not want to use this package on its own, but rather use one
 of its sub-packages:
 
  * `niteoweb.ipn.jvzoo <http://pypi.python.org/pypi/niteoweb.ipn.jvzoo>`_
- * `niteoweb.ipn.c2s <http://pypi.python.org/pypi/niteoweb.ipn.c2s>`_
+ * `niteoweb.ipn.c2s (WIP) <http://pypi.python.org/pypi/niteoweb.ipn.c2s>`_
 
 How it works
 ============

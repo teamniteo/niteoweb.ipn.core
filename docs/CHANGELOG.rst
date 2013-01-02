@@ -4,7 +4,7 @@ Changelog
 1.1 (Unreleased)
 ----------------
 
-- Use 'ipn_' as a prefix for product group IDs.
+- Use ``ipn_`` as a prefix for product group IDs.
   [zupo]
 
 
