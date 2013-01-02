@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1 (Unreleased)
+1.1 (2013-01-02)
 ----------------
 
 - Use ``ipn_`` as a prefix for product group IDs.
