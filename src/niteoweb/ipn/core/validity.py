@@ -20,6 +20,7 @@ class Validity(grok.View):
 
     def render(self):
         """Check for expired members and disable them."""
+        messages = ['START validity check.']
 
         secret = api.portal.get_registry_record(
             'niteoweb.ipn.core.validity.secret')
@@ -29,9 +30,16 @@ class Validity(grok.View):
         ipn = getAdapter(self.context, IIPN)
         now = DateTime()
         for member in api.user.get_users():
-            if member.getProperty('valid_to') < now:
-                ipn.disable_member(
-                    email=member.id,
-                    product_id=member.getProperty('product_id'),
-                    trans_type='cronjob',
+            valid_to = member.getProperty('valid_to')
+            if valid_to < now:
+                messages.append(
+                    "Disabling member '%s' (%s)."
+                    % (member.id, valid_to.strftime('%Y/%m/%d'))
                 )
+                if not self.request.get('dry-run'):
+                    ipn.disable_member(
+                        email=member.id,
+                        product_id=member.getProperty('product_id'),
+                        trans_type='cronjob',
+                    )
+        return '<br />'.join(messages)

@@ -49,6 +49,36 @@ class TestValidity(IntegrationTestCase):
         self.request['secret'] = 'wrong secret'
         self.assertEquals(view.render(), err_msg)
 
+    def test_dry_run(self):
+        """Test that member is not disabled if dry-run is set to True."""
+
+        # first, let's create a member and enable it
+        api.group.create(groupname='ipn_1')
+        group = api.group.get(groupname='ipn_1')
+        group.setGroupProperties(mapping={'validity': 31})
+        self.ipn.enable_member(
+            email='new@test.com',
+            product_id='1',
+            trans_type='SALE',
+            fullname='New Member',
+            affiliate='aff@test.com',
+        )
+
+        # run @@validity
+        self.request['secret'] = 'secret'
+        self.request['dry-run'] = True
+        view = self.portal.restrictedTraverse('validity')
+        view.render()
+
+        # test member still has the Member role
+        self.assertIn('Member', api.user.get_roles(username='new@test.com'))
+
+        # test member is not in Disabled group
+        self.assertNotIn(
+            'disabled',
+            [g.id for g in api.group.get_groups(username='new@test.com')]
+        )
+
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
     def test_validity(self, DT):
         """Integration test of @@validity view."""
@@ -76,7 +106,7 @@ class TestValidity(IntegrationTestCase):
         DT.return_value = DateTime('2012/02/02')
         self.request['secret'] = 'secret'
         view = self.portal.restrictedTraverse('validity')
-        view.render()
+        html = view.render()
 
         # test member is in Disabled group
         self.assertIn(
@@ -106,6 +136,15 @@ class TestValidity(IntegrationTestCase):
             history=['2012/01/01 00:00:00|enable_member|1|SALE|',
                      '2012/02/02 00:00:00|disable_member|1|cronjob|'
                      'removed from groups: ipn_1, ']
+        )
+
+        # test HTML output
+        self.assertEquals(
+            html.split('<br />'),
+            [
+                "START validity check.",
+                "Disabling member 'new@test.com' (2012/02/01).",
+            ]
         )
 
         # test log output

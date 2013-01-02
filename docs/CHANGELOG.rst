@@ -1,6 +1,16 @@
 Changelog
 =========
 
+1.2 (Unreleased)
+----------------
+
+- The @@validity view now supports *dry-run* mode.
+  [zupo]
+
+- The @@validity view now prints processing results to the browser.
+  [zupo]
+
+
 1.1 (2013-01-02)
 ----------------
 
