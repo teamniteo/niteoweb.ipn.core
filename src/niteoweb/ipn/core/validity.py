@@ -42,4 +42,4 @@ class Validity(grok.View):
                         product_id=member.getProperty('product_id'),
                         trans_type='cronjob',
                     )
-        return '<br />'.join(messages)
+        return '\n'.join(messages)

@@ -140,7 +140,7 @@ class TestValidity(IntegrationTestCase):
 
         # test HTML output
         self.assertEquals(
-            html.split('<br />'),
+            html.split('\n'),
             [
                 "START validity check.",
                 "Disabling member 'new@test.com' (2012/02/01).",
