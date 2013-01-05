@@ -3,6 +3,7 @@
 
 from DateTime import DateTime
 from five import grok
+from niteoweb.ipn.core import DISABLED
 from niteoweb.ipn.core.interfaces import IIPN
 from plone import api
 from Products.CMFCore.interfaces import ISiteRoot
@@ -30,6 +31,10 @@ class Validity(grok.View):
         ipn = getAdapter(self.context, IIPN)
         now = DateTime()
         for member in api.user.get_users():
+
+            if DISABLED in [g.id for g in api.group.get_groups(user=member)]:
+                continue  # already disabled
+
             valid_to = member.getProperty('valid_to')
             if valid_to < now:
                 messages.append(
