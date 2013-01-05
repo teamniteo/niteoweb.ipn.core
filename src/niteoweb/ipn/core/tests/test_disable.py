@@ -39,17 +39,6 @@ class TestConstraints(IntegrationTestCase):
         with self.assertRaises(MissingParamError) as cm:
             self.ipn.disable_member(
                 email='enabled@test.com',
-                product_id=None,
-                trans_type='CANCEL',
-            )
-        self.assertEquals(
-            cm.exception.message,
-            "Parameter 'product_id' is missing.",
-        )
-
-        with self.assertRaises(MissingParamError) as cm:
-            self.ipn.disable_member(
-                email='enabled@test.com',
                 product_id='1',
                 trans_type=None,
             )
