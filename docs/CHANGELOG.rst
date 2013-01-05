@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2 (Unreleased)
+1.2 (2013-01-05)
 ----------------
 
 - The @@validity view now supports *dry-run* mode.
