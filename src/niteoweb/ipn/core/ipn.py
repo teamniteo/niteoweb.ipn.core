@@ -173,9 +173,6 @@ class IPN(grok.MultiAdapter):
         if not email:
             raise MissingParamError("Parameter 'email' is missing.")
 
-        if not product_id:
-            raise MissingParamError("Parameter 'product_id' is missing.")
-
         if not trans_type:
             raise MissingParamError("Parameter 'trans_type' is missing.")
 
