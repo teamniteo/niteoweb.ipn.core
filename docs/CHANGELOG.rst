@@ -1,13 +1,26 @@
 Changelog
 =========
 
+1.3 (Unreleased)
+----------------
+
+- Nothing changed yet.
+
+
 1.2 (2013-01-05)
 ----------------
+
+- The ``product_id`` parameter is not always needed for in ``disable_member``
+  so don't make it required.
+  [zupo]
 
 - The @@validity view now supports *dry-run* mode.
   [zupo]
 
 - The @@validity view now prints processing results to the browser.
+  [zupo]
+
+- Better ``valid_to`` default value.
   [zupo]
 
 
