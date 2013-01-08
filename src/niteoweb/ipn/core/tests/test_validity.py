@@ -49,8 +49,10 @@ class TestValidity(IntegrationTestCase):
         self.request['secret'] = 'wrong secret'
         self.assertEquals(view.render(), err_msg)
 
-    def test_dry_run(self):
+    @mock.patch('niteoweb.ipn.core.ipn.DateTime')
+    def test_dry_run(self, DT):
         """Test that member is not disabled if dry-run is set to True."""
+        DT.return_value = DateTime('2012/01/01')
 
         # first, let's create a member and enable it
         api.group.create(groupname='ipn_1')
@@ -65,6 +67,7 @@ class TestValidity(IntegrationTestCase):
         )
 
         # run @@validity
+        DT.return_value = DateTime('2012/02/02')
         self.request['secret'] = 'secret'
         self.request['dry-run'] = True
         view = self.portal.restrictedTraverse('validity')
@@ -78,6 +81,17 @@ class TestValidity(IntegrationTestCase):
             'disabled',
             [g.id for g in api.group.get_groups(username='new@test.com')]
         )
+
+    def test_skip_disabled_members(self):
+        """Test that disabled members are skipped."""
+        # add test member to disabled group
+        api.group.add_user(groupname='disabled', username=TEST_USER_ID)
+
+        self.request['secret'] = 'secret'
+        view = self.portal.restrictedTraverse('validity')
+        view.render()
+
+        self.assertEqual(self.log.records, [])
 
     @mock.patch('niteoweb.ipn.core.ipn.DateTime')
     def test_validity(self, DT):

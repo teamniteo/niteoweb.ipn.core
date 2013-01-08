@@ -30,6 +30,7 @@ class Validity(grok.View):
 
         ipn = getAdapter(self.context, IIPN)
         now = DateTime()
+
         for member in api.user.get_users():
 
             if DISABLED in [g.id for g in api.group.get_groups(user=member)]:
