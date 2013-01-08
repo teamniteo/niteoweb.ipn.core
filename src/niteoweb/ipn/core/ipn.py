@@ -57,7 +57,8 @@ class IPN(grok.MultiAdapter):
         :returns: None
 
         """
-        logger.info("START enable_member:%s for '%s'." % (trans_type, email))
+        logger.info("{0}: START enable_member:{1} for '{2}'.".format(
+            api.user.get_current(), trans_type, email))
         note = ''
 
         if not email:
@@ -86,7 +87,8 @@ class IPN(grok.MultiAdapter):
                 raise MissingParamError(
                     "Parameter 'affiliate' is needed to create a new member.")
 
-            logger.info("Creating a new member: %s" % email)
+            logger.info("{0}: Creating a new member: {1}".format(
+                api.user.get_current(), email))
             properties = dict(
                 product_id=product_id,
                 fullname=fullname,
@@ -101,20 +103,22 @@ class IPN(grok.MultiAdapter):
         # If an existing member is in group Disabled, remove him from there
         if DISABLED in [g.id for g in api.group.get_groups(user=member)]:
             logger.info(
-                "Removing member '%s' from Disabled group." % member.id)
+                "{0}: Removing member '{1}' from Disabled group.".format(
+                    api.user.get_current(), member.id))
             api.group.remove_user(groupname=DISABLED, user=member)
 
         # Grant Member role if member does not have it yet
         if not 'Member' in api.user.get_roles(user=member):
-            logger.info("Granting member '%s' the Member role." % member.id)
+            logger.info("{0}: Granting member '{1}' the Member role.".format(
+                api.user.get_current(), member.id))
             api.user.grant_roles(user=member, roles=['Member'])
 
         # Add member to product group
         if product_group not in api.group.get_groups(user=member):
             api.group.add_user(user=member, group=product_group)
             logger.info(
-                "Added member '%s' to product group '%s'."
-                % (member.id, product_group)
+                "{0}: Added member '{1}' to product group '{2}'.".format(
+                    api.user.get_current(), member.id, product_group)
             )
 
         # Set member's validity based on his product group
@@ -126,9 +130,8 @@ class IPN(grok.MultiAdapter):
 
         valid_to = DateTime() + product_validity
         member.setMemberProperties(mapping={'valid_to': valid_to})
-        logger.info(
-            "Member's (%s) valid_to date set to %s."
-            % (member.id, valid_to.strftime('%Y/%m/%d')))
+        logger.info("{0}: Member's ({1}) valid_to date set to {2}.".format(
+            api.user.get_current(), member.id, valid_to.strftime('%Y/%m/%d')))
 
         # Add entry to member history
         self._add_to_member_history(
@@ -146,7 +149,8 @@ class IPN(grok.MultiAdapter):
         notify(MemberEnabledEvent(member.id))
 
         # Done!
-        logger.info("END enable_member:%s for '%s'." % (trans_type, email))
+        logger.info("{0}: END enable_member:{1} for '{2}'.".format(
+            api.user.get_current(), trans_type, email))
 
     def disable_member(
         self,
@@ -167,7 +171,8 @@ class IPN(grok.MultiAdapter):
         :returns: None
 
         """
-        logger.info("START disable_member:%s for '%s'." % (trans_type, email))
+        logger.info("{0}: START disable_member:{1} for '{2}'.".format(
+            api.user.get_current(), trans_type, email))
         note = ''
 
         if not email:
@@ -183,7 +188,8 @@ class IPN(grok.MultiAdapter):
 
         # Move to Disabled group if not already there
         if not member in api.user.get_users(groupname=DISABLED):
-            logger.info("Adding member '%s' to Disabled group." % member.id)
+            logger.info("{0}: Adding member '{1}' to Disabled group.".format(
+                api.user.get_current(), member.id))
             api.group.add_user(groupname=DISABLED, user=member)
 
         # Remove member from all groups and add a note to history which groups
@@ -193,15 +199,15 @@ class IPN(grok.MultiAdapter):
             note = 'removed from groups: '
             for group in other_groups:
                 logger.info(
-                    "Removing member '%s' from group '%s'."
-                    % (member.id, group.id)
-                )
+                    "{0}: Removing member '{1}' from group '{2}'.".format(
+                        api.user.get_current(), member.id, group.id))
                 api.group.remove_user(group=group, user=member)
                 note += '%s, ' % group.id
 
         # Revoke 'Member' role which "disables" the user
         if 'Member' in api.user.get_roles(user=member):
-            logger.info("Revoking member '%s' the Member role." % member.id)
+            logger.info("{0}: Revoking member '{1}' the Member role.".format(
+                api.user.get_current(), member.id))
             api.user.revoke_roles(user=member, roles=['Member'])
 
         # Add entry to member history
@@ -220,7 +226,8 @@ class IPN(grok.MultiAdapter):
         notify(MemberDisabledEvent(member.id))
 
         # Done!
-        logger.info("END disable_member:%s for '%s'." % (trans_type, email))
+        logger.info("{0}: END disable_member:{1} for '{2}'.".format(
+            api.user.get_current(), trans_type, email))
 
     def _add_to_member_history(self, member, msg):
         """Add a record to member's history.

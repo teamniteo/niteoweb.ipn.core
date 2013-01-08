@@ -4,7 +4,8 @@ Changelog
 1.3 (Unreleased)
 ----------------
 
-- Nothing changed yet.
+- Prefix log entries with current user's username.
+  [zupo]
 
 
 1.2 (2013-01-05)

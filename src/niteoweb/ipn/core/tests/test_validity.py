@@ -151,21 +151,26 @@ class TestValidity(IntegrationTestCase):
         self.assertEqual(len(self.log.records), 5)
         self.assert_log_record(
             'INFO',
+            'Anonymous User',
             "START disable_member:cronjob for 'new@test.com'.",
         )
         self.assert_log_record(
             'INFO',
+            'Anonymous User',
             "Adding member 'new@test.com' to Disabled group.",
         )
         self.assert_log_record(
             'INFO',
+            'Anonymous User',
             "Removing member 'new@test.com' from group 'ipn_1'.",
         )
         self.assert_log_record(
             'INFO',
+            'Anonymous User',
             "Revoking member 'new@test.com' the Member role.",
         )
         self.assert_log_record(
             'INFO',
+            'Anonymous User',
             "END disable_member:cronjob for 'new@test.com'.",
         )

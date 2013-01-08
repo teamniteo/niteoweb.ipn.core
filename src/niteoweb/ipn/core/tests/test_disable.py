@@ -129,22 +129,27 @@ class TestUseCases(IntegrationTestCase):
         self.assertEqual(len(self.log.records), 5)
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "START disable_member:CANCEL for 'enabled@test.com'.",
         )
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "Adding member 'enabled@test.com' to Disabled group.",
         )
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "Removing member 'enabled@test.com' from group 'ipn_1'.",
         )
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "Revoking member 'enabled@test.com' the Member role.",
         )
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "END disable_member:CANCEL for 'enabled@test.com'.",
         )
 
@@ -184,12 +189,12 @@ class TestUseCases(IntegrationTestCase):
 
         # test log output
         for record in self.log.records:
-            self.assertNotEquals(
-                record.getMessage(),
+            self.assertNotIn(
                 "Adding member 'enabled@test.com' to Disabled group.",
+                record.getMessage(),
             )
 
-            self.assertNotEquals(
-                record.getMessage(),
+            self.assertNotIn(
                 "Revoking member 'enabled@test.com' the Member role.",
+                record.getMessage(),
             )

@@ -202,22 +202,27 @@ class TestEnableMember(IntegrationTestCase):
         self.assertEqual(len(self.log.records), 5)
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "START enable_member:SALE for 'new@test.com'.",
         )
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "Creating a new member: new@test.com",
         )
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "Added member 'new@test.com' to product group 'ipn_1'.",
         )
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "Member's (new@test.com) valid_to date set to 2012/02/01.",
         )
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "END enable_member:SALE for 'new@test.com'.",
         )
 
@@ -263,14 +268,17 @@ class TestEnableMember(IntegrationTestCase):
         self.assertEqual(len(self.log.records), 3)
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "START enable_member:RECUR for 'new@test.com'.",
         )
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "Member's (new@test.com) valid_to date set to 2012/03/03.",
         )
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "END enable_member:RECUR for 'new@test.com'.",
         )
 
@@ -326,25 +334,31 @@ class TestEnableMember(IntegrationTestCase):
         self.assertEqual(len(self.log.records), 6)
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "START enable_member:UNCANCEL for 'disabled@test.com'.",
         )
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "Removing member 'disabled@test.com' from Disabled group.",
         )
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "Granting member 'disabled@test.com' the Member role.",
         )
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "Added member 'disabled@test.com' to product group 'ipn_1'.",
         )
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "Member's (disabled@test.com) valid_to date set to 2012/02/01.",
         )
         self.assert_log_record(
             'INFO',
+            'test_user_1_',
             "END enable_member:UNCANCEL for 'disabled@test.com'.",
         )
