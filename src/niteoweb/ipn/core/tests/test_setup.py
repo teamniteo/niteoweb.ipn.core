@@ -72,9 +72,9 @@ class TestInstall(IntegrationTestCase):
         )
 
         self.assertTrue(hasattr(memberdata, 'valid_to'))
-        self.assertEquals(
+        self.assertIn(
+            "DateTime.DateTime.DateTime",
             str(memberdata.getProperty('valid_to').__class__),
-            'DateTime.DateTime.DateTime'
         )
 
         self.assertTrue(hasattr(memberdata, 'history'))
