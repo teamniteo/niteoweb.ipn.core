@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.4 (unreleased)
+----------------
+
+- @@validity view raises ConflictError on busy site, solved by
+  committing transaction after every disabled user.
+  [Matej Cotman]
+
+
 1.3 (2013-01-08)
 ----------------
 
