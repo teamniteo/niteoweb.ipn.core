@@ -10,6 +10,7 @@ from Products.CMFCore.interfaces import ISiteRoot
 from zope.component import getAdapter
 
 import logging
+import transaction
 
 logger = logging.getLogger("niteoweb.ipn.core")
 
@@ -48,4 +49,5 @@ class Validity(grok.View):
                         product_id=member.getProperty('product_id'),
                         trans_type='cronjob',
                     )
+                    transaction.commit()
         return '\n'.join(messages)
