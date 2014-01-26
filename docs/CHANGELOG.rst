@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.5 (2014-01-26)
+----------------
+
+- Also set ``product_id`` on already existing members.
+  [zupo]
+
+
 1.4 (2013-10-07)
 ----------------
 
