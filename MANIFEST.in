@@ -1,2 +1,2 @@
 graft src/niteoweb
-include *.cfg *.rst *.in
+include *.cfg *.rst *.in *.rst

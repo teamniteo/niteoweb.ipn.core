@@ -4,7 +4,8 @@ Changelog
 1.6 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Include .rst files in release.
+  [zupo]
 
 
 1.5 (2014-01-26)
