@@ -1,8 +1,8 @@
 Changelog
 =========
 
-1.6 (unreleased)
-----------------
+1.5.1 (2014-01-26)
+------------------
 
 - Include .rst files in release.
   [zupo]
