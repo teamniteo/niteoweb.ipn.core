@@ -121,6 +121,9 @@ class IPN(grok.MultiAdapter):
                     api.user.get_current(), member.id, product_group)
             )
 
+        # Set member's product_id
+        member.setMemberProperties(mapping={'product_id': product_id})
+
         # Set member's validity based on his product group
         product_validity = int(product_group.getProperty('validity'))
         if product_validity < 1:
