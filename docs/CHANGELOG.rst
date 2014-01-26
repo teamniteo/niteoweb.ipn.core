@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.5.2 (unreleased)
+1.5.2 (2014-01-26)
 ------------------
 
 - Another fix to include CHANGELOG.rst in the release.

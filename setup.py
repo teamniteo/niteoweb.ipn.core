@@ -17,7 +17,7 @@ long_description = \
 
 setup(
     name='niteoweb.ipn.core',
-    version='1.5.2.dev0',
+    version='1.5.2',
     description="Support for Instant Payment Notifications in Plone.",
     long_description=long_description,
     # Get more from http://pypi.python.org/pypi?%3Aaction=list_classifiers
