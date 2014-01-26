@@ -19,7 +19,7 @@ htmlcov/index.html: src/niteoweb/ipn/core/*.py src/niteoweb/ipn/core/tests/*.py 
 	bin/buildout $(options)
 
 bin/buildout: $(python) buildout.cfg bootstrap.py
-	$(python) bootstrap.py -d
+	$(python) bootstrap.py
 	@touch $@
 
 $(python):

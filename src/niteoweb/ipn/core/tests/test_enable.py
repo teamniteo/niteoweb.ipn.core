@@ -143,10 +143,14 @@ class TestEnableMember(IntegrationTestCase):
         self.log = InstalledHandler('niteoweb.ipn.core')
         eventtesting.setUp()
 
-        # create a test product group and set it's validity
+        # create test product groups and set their validity
         api.group.create(groupname='ipn_1')
         group = api.group.get(groupname='ipn_1')
         group.setGroupProperties(mapping={'validity': 31})
+
+        api.group.create(groupname='ipn_2')
+        group = api.group.get(groupname='ipn_2')
+        group.setGroupProperties(mapping={'validity': 365})
 
     def tearDown(self):
         """Clean up after yourself."""
@@ -239,14 +243,18 @@ class TestEnableMember(IntegrationTestCase):
         DT.return_value = DateTime('2012/02/01')
         self.ipn.enable_member(
             email='new@test.com',
-            product_id='1',
+            product_id='2',
             trans_type='RECUR',
         )
 
-        # test member valid_to
+        # assert member product_id & valid_to
+        self.assertEqual(
+            api.user.get(username='new@test.com').getProperty('product_id'),
+            '2',
+        )
         self.assertEqual(
             api.user.get(username='new@test.com').getProperty('valid_to'),
-            DateTime('2012/03/03')
+            DateTime('2013/01/31')
         )
 
         # test event emitted
@@ -260,12 +268,12 @@ class TestEnableMember(IntegrationTestCase):
             username='new@test.com',
             history=[
                 '2012/01/01 00:00:00|enable_member|1|SALE|',
-                '2012/02/01 00:00:00|enable_member|1|RECUR|',
+                '2012/02/01 00:00:00|enable_member|2|RECUR|',
             ],
         )
 
         # test log output
-        self.assertEqual(len(self.log.records), 3)
+        self.assertEqual(len(self.log.records), 4)
         self.assert_log_record(
             'INFO',
             'test_user_1_',
@@ -274,7 +282,12 @@ class TestEnableMember(IntegrationTestCase):
         self.assert_log_record(
             'INFO',
             'test_user_1_',
-            "Member's (new@test.com) valid_to date set to 2012/03/03.",
+            "Added member 'new@test.com' to product group 'ipn_2'.",
+        )
+        self.assert_log_record(
+            'INFO',
+            'test_user_1_',
+            "Member's (new@test.com) valid_to date set to 2013/01/31.",
         )
         self.assert_log_record(
             'INFO',
@@ -297,7 +310,7 @@ class TestEnableMember(IntegrationTestCase):
 
         self.ipn.enable_member(
             email='disabled@test.com',
-            product_id='1',
+            product_id='2',
             trans_type='UNCANCEL',
         )
 
@@ -313,10 +326,15 @@ class TestEnableMember(IntegrationTestCase):
             api.user.get_roles(username='disabled@test.com'),
         )
 
-        # test member valid_to
+        # assert member product_id & valid_to
+        self.assertEqual(
+            api.user.get(
+                username='disabled@test.com').getProperty('product_id'),
+            '2',
+        )
         self.assertEqual(
             api.user.get(username='disabled@test.com').getProperty('valid_to'),
-            DateTime('2012/02/01')
+            DateTime('2012/12/31')
         )
 
         # test event emitted
@@ -327,7 +345,7 @@ class TestEnableMember(IntegrationTestCase):
         # test member history
         self.assert_member_history(
             username='disabled@test.com',
-            history=['2012/01/01 00:00:00|enable_member|1|UNCANCEL|']
+            history=['2012/01/01 00:00:00|enable_member|2|UNCANCEL|']
         )
 
         # test log output
@@ -350,12 +368,12 @@ class TestEnableMember(IntegrationTestCase):
         self.assert_log_record(
             'INFO',
             'test_user_1_',
-            "Added member 'disabled@test.com' to product group 'ipn_1'.",
+            "Added member 'disabled@test.com' to product group 'ipn_2'.",
         )
         self.assert_log_record(
             'INFO',
             'test_user_1_',
-            "Member's (disabled@test.com) valid_to date set to 2012/02/01.",
+            "Member's (disabled@test.com) valid_to date set to 2012/12/31.",
         )
         self.assert_log_record(
             'INFO',
