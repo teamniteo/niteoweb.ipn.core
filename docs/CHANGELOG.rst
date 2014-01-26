@@ -4,7 +4,8 @@ Changelog
 1.5.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Another fix to include CHANGELOG.rst in the release.
+  [zupo]
 
 
 1.5.1 (2014-01-26)
