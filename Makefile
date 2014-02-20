@@ -11,7 +11,7 @@ coverage: htmlcov/index.html
 
 htmlcov/index.html: src/niteoweb/ipn/core/*.py src/niteoweb/ipn/core/tests/*.py bin/coverage
 	@bin/coverage run --source=./src/niteoweb/ipn/core/ --branch bin/test
-	@bin/coverage html -i
+	@bin/coverage html -i --fail-under 99
 	@touch $@
 	@echo "Coverage report was generated at '$@'."
 
