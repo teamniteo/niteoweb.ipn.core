@@ -4,7 +4,8 @@ Changelog
 1.5.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add optional ``note`` parameter to enable_member method.
+  [matejc]
 
 
 1.5.2 (2014-01-26)

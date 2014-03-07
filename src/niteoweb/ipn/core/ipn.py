@@ -38,6 +38,7 @@ class IPN(grok.MultiAdapter):
         trans_type=None,
         fullname=None,
         affiliate=None,
+        note='',
     ):
         """Enable an existing or create a new member.
 
@@ -59,7 +60,6 @@ class IPN(grok.MultiAdapter):
         """
         logger.info("{0}: START enable_member:{1} for '{2}'.".format(
             api.user.get_current(), trans_type, email))
-        note = ''
 
         if not email:
             raise MissingParamError("Parameter 'email' is missing.")

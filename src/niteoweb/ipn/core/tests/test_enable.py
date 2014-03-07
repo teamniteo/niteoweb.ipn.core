@@ -168,6 +168,7 @@ class TestEnableMember(IntegrationTestCase):
             trans_type='SALE',
             fullname='New Member',
             affiliate='aff@test.com',
+            note='Some test note!'
         )
 
         # test member exists
@@ -199,7 +200,9 @@ class TestEnableMember(IntegrationTestCase):
         # test member history
         self.assert_member_history(
             username='new@test.com',
-            history=['2012/01/01 00:00:00|enable_member|1|SALE|']
+            history=[
+                '2012/01/01 00:00:00|enable_member|1|SALE|Some test note!'
+            ]
         )
 
         # test log output
@@ -245,6 +248,7 @@ class TestEnableMember(IntegrationTestCase):
             email='new@test.com',
             product_id='2',
             trans_type='RECUR',
+            note='Some test note!'
         )
 
         # assert member product_id & valid_to
@@ -267,8 +271,8 @@ class TestEnableMember(IntegrationTestCase):
         self.assert_member_history(
             username='new@test.com',
             history=[
-                '2012/01/01 00:00:00|enable_member|1|SALE|',
-                '2012/02/01 00:00:00|enable_member|2|RECUR|',
+                '2012/01/01 00:00:00|enable_member|1|SALE|Some test note!',
+                '2012/02/01 00:00:00|enable_member|2|RECUR|Some test note!',
             ],
         )
 
@@ -312,6 +316,7 @@ class TestEnableMember(IntegrationTestCase):
             email='disabled@test.com',
             product_id='2',
             trans_type='UNCANCEL',
+            note='Some test note!'
         )
 
         # test member is no longer in Disabled group
@@ -345,7 +350,9 @@ class TestEnableMember(IntegrationTestCase):
         # test member history
         self.assert_member_history(
             username='disabled@test.com',
-            history=['2012/01/01 00:00:00|enable_member|2|UNCANCEL|']
+            history=[
+                '2012/01/01 00:00:00|enable_member|2|UNCANCEL|Some test note!'
+            ]
         )
 
         # test log output
