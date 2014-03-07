@@ -1,7 +1,13 @@
 Changelog
 =========
 
-1.5.3 (unreleased)
+1.5.4 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
+1.5.3 (2014-03-07)
 ------------------
 
 - Add optional ``note`` parameter to enable_member method.
